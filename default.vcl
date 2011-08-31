@@ -4,6 +4,20 @@ backend default {
 	.first_byte_timeout = 300s;
 }
 
+sub vcl_hash {
+    set req.hash += req.url;
+    if (req.http.host) {
+        set req.hash += req.http.host;
+    } else {
+        set req.hash += server.ip;
+    }
+	if (req.http.https) {
+        set req.hash += req.http.https;
+    } 
+    return (hash);
+}
+
+
 /*
 Like the default function, only that cookies don't prevent caching
 */
