@@ -7,11 +7,26 @@
 $.noConflict();
 jQuery(document).ready(function($) {
 
-	var data = { getBlocks: {} };
+	var data = { 
+		getBlocks: {}
+	};
 
 	// add placeholders
+	var counter = 0;
 	$('.placeholder').each(function() {
-		data.getBlocks[$(this).attr('id')] = $(this).attr('rel');
+		var id = $(this).attr('id');
+		if (!id) {
+			// create dynamic id
+			id = 'ph_' + counter;
+			$(this).attr('id', id);
+		}
+		var rel = $(this).attr('rel');
+		if (rel) {
+			data.getBlocks[id] = rel;
+			counter++;
+		} else {
+			throw 'Found placeholder without rel attribute';
+		}
 	});
 
 	// add current product
@@ -20,16 +35,21 @@ jQuery(document).ready(function($) {
 	}
 
 	// E.T. phone home
-	$.get(
-		AJAXHOME_URL,
-		data,
-		function (data) {
-			for(var id in data.blocks) {
-				$('#' + id).html(data.blocks[id]);
-			}
-			$.cookie('frontend', data.sid, { path: '/' });
-		},
-		'json'
-	);
-
+	if (typeof data.currentProductId !== 'undefined' || counter > 0) {
+		$.get(
+			AJAXHOME_URL,
+			data,
+			function (response) {
+				for(var id in response.blocks) {
+					$('#' + id).html(response.blocks[id]);
+				}
+				// inject session if (TODO: check if this is really needed)
+				// $.cookie('frontend', response.sid, { path: '/' });
+				
+				// TODO: trigger event
+			},
+			'json'
+		);
+	}
+	
 });
