@@ -1,4 +1,5 @@
 <layout version="0.1.0">
+
 	<default>
 
 		<reference name="head">
@@ -12,4 +13,14 @@
 		</reference>
 
 	</default>
+
+	<!-- This layout handle will only be processed if a cacheable controller action is detected (see configuration) -->
+	<!-- If you decide to replace dynamic block only in cacheable actions you can move the content of the default block in this one -->
+	<aoestatic_cacheable>
+	</aoestatic_cacheable>
+
+	<!-- This layout handle will only be processed if a not cacheable controller action is detected (see configuration) -->
+	<aoestatic_notcacheable>
+	</aoestatic_notcacheable>
+
 </layout>
