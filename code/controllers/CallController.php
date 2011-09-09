@@ -31,12 +31,14 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action {
 		$layout = $this->getLayout();
 
 		$requestedBlockNames = $this->getRequest()->getParam('getBlocks');
-		foreach ($requestedBlockNames as $id => $requestedBlockName) {
-			$tmpBlock = $layout->getBlock($requestedBlockName);
-			if ($tmpBlock) {
-				$response['blocks'][$id] = $tmpBlock->toHtml();
-			} else {
-				$response['blocks'][$id] = 'BLOCK NOT FOUND';
+		if (is_array($requestedBlockNames)) {
+			foreach ($requestedBlockNames as $id => $requestedBlockName) {
+				$tmpBlock = $layout->getBlock($requestedBlockName);
+				if ($tmpBlock) {
+					$response['blocks'][$id] = $tmpBlock->toHtml();
+				} else {
+					$response['blocks'][$id] = 'BLOCK NOT FOUND';
+				}
 			}
 		}
 		$this->getResponse()->setBody(Zend_Json::encode($response));
