@@ -1,7 +1,7 @@
 <layout version="0.1.0">
 
 	<default>
-
+	<!--
 		<reference name="head">
 			<action method="addJs"><script>aoestatic/jquery-1.6.1.min.js</script></action>
 			<action method="addJs"><script>aoestatic/jquery.cookie.js</script></action>
@@ -11,7 +11,7 @@
 		<reference name="before_body_end">
 			<block type="aoestatic/beforebodyend" template="aoestatic/beforebodyend.phtml"></block>
 		</reference>
-
+	-->
 	</default>
 
 	<!-- This layout handle will only be processed if a cacheable controller action is detected (see configuration) -->
