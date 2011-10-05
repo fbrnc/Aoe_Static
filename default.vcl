@@ -13,10 +13,14 @@ sub vcl_hash {
     }
 	if (req.http.https) {
         set req.hash += req.http.https;
-    } 
+    }
     return (hash);
 }
 
+acl cache_acl {
+	"127.0.0.1";
+	# insert additional ip's here
+}
 
 /*
 Like the default function, only that cookies don't prevent caching
@@ -67,8 +71,21 @@ sub vcl_recv {
 
 	# Force lookup if the request is a no-cache request from the client.
 	if (req.http.Cache-Control ~ "no-cache") {
-		purge_url(req.url);
+		if (client.ip ~ cache_acl) {
+			purge_url(req.url);
+		} else {
+			error 405 "Not allowed.";
+		}
 	}
+
+	# PURGE requests
+	if (req.request == "PURGE") {
+        if (client.ip ~ cache_acl) {
+			purge_url(req.url);
+		} else {
+			error 405 "Not allowed.";
+		}
+    }
 
 	if (req.request != "GET" && req.request != "HEAD") {
 		/* We only deal with GET and HEAD by default */
