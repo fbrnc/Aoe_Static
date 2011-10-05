@@ -102,34 +102,63 @@ sub vcl_recv {
 Remove cookies from backend response so this page can be cached
 */
 sub vcl_fetch {
-	if (beresp.status == 302 || beresp.status == 301 || beresp.status == 418) {
-		return (pass);
-	}
-	if (beresp.http.aoestatic == "cache") {
-		remove beresp.http.Set-Cookie;
-		remove beresp.http.X-Cache;
-		remove beresp.http.Server;
-		remove beresp.http.Age;
-		remove beresp.http.Pragma;
-		set beresp.http.Cache-Control = "public";
-		set beresp.grace = 2m;
-		set beresp.http.X_AOESTATIC_FETCH = "Removed cookie in vcl_fetch";
-	} else {
-		set beresp.http.X_AOESTATIC_FETCH = "Nothing removed";
-	}
+    # set minimum timeouts to auto-discard stored objects
+    set beresp.grace = 600s;
 
-	# Some known-static file types
-	if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)$") {
-		# Force caching
-		remove beresp.http.Pragma;
-		remove beresp.http.Set-Cookie;
-		set beresp.http.Cache-Control = "public";
-	}
+    if (beresp.http.aoestatic == "cache") {
+        remove beresp.http.Set-Cookie;
+        remove beresp.http.X-Cache;
+        remove beresp.http.Server;
+        remove beresp.http.Age;
+        remove beresp.http.Pragma;
+        set beresp.http.Cache-Control = "public";
+        set beresp.grace = 2m;
+        set beresp.http.X_AOESTATIC_FETCH = "Removed cookie in vcl_fetch";
+        set beresp.cacheable = true;
+    } else {
+        set beresp.http.X_AOESTATIC_FETCH = "Nothing removed";
+    }
 
-	if (!beresp.cacheable) {
-		return (pass);
-	}
-	return (deliver);
+
+    # Don't cache negative lookups
+    if (beresp.status >= 400) {
+       set beresp.ttl = 0s;
+       set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "Status greater than 400";
+       return(pass);
+    }
+
+    if (!beresp.cacheable) {
+        set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "Not cacheable";
+        return(pass);
+    }
+
+    if (req.http.Authorization) {
+        set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "HTTP AUTH";
+        return(pass);
+    }
+
+    # Some known-static file types
+    if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)\$") {
+        # Force caching
+        remove beresp.http.Pragma;
+        remove beresp.http.Set-Cookie;
+        set beresp.http.Cache-Control = "public";
+    }
+
+    if (beresp.http.Set-Cookie) {
+        set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "Cookie";
+        return(pass);
+    }
+
+    if (!beresp.http.Cache-Control ~ "public") {
+        set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "Cache-Control is not public";
+        return(pass);
+    }
+
+    if (beresp.http.Pragma ~ "(no-cache|private)") {
+        set beresp.http.X_AOESTATIC_FETCH_PASSREASON = "Pragma is no-cache or private";
+        return(pass);
+    }
 }
 
 /*
