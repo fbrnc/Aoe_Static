@@ -73,7 +73,7 @@ sub vcl_recv {
 	if (req.http.Cache-Control ~ "no-cache") {
 		if (client.ip ~ cache_acl) {
 			purge_url(req.url);
-			error 200 "Purged."
+			error 200 "Purged.";
 		} else {
 			error 405 "Not allowed.";
 		}
@@ -83,7 +83,7 @@ sub vcl_recv {
 	if (req.request == "PURGE") {
         if (client.ip ~ cache_acl) {
 			purge_url(req.url);
-			error 200 "Purged."
+			error 200 "Purged.";
 		} else {
 			error 405 "Not allowed.";
 		}
