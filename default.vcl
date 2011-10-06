@@ -166,8 +166,8 @@ Adding debugging information
 */
 sub vcl_deliver {
 	if (obj.hits > 0) {
-		set resp.http.X-Cache = "HIT";
-		set resp.http.Server = "Varnish (HIT)";
+		set resp.http.X-Cache = "HIT ("obj.hits")";
+		set resp.http.Server = "Varnish (HIT: "obj.hits")";
 	} else {
 		set resp.http.X-Cache = "MISS";
 		set resp.http.Server = "Varnish (MISS)";
