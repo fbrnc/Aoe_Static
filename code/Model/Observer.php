@@ -25,13 +25,29 @@ class Aoe_Static_Model_Observer
 
 		$lifetime = $helper->isCacheableAction($fullActionName);
 
+		$response = $controllerAction->getResponse(); /* @var $response Mage_Core_Controller_Response_Http */
 		if ($lifetime) {
-			$response = $controllerAction->getResponse(); /* @var $response Mage_Core_Controller_Response_Http */
+			// allow caching
 			$response->setHeader('X-Magento-Lifetime', $lifetime, true); // Only for debugging and information
-			$response->setHeader('X-Magento-Action', $fullActionName, true); // Only for debugging and information
 			$response->setHeader('Cache-Control', 'max-age='. $lifetime, true);
 			$response->setHeader('aoestatic', 'cache', true);
+		} else {
+			// do not allow caching
+			$itemsInCart = Mage::helper('checkout/cart')->getSummaryCount();
+			$cookie = Mage::getModel('core/cookie'); /* @var $cookie Mage_Core_Model_Cookie */
+			$cookie->set('aoestatic_itemsincart', $itemsInCart);
+
+			$name = '';
+			$loggedIn = false;
+			$session = Mage::getSingleton('customer/session'); /* @var $session Mage_Customer_Model_Session  */
+			if ($session->isLoggedIn()) {
+				$loggedIn = true;
+				$name = $session->getCustomer()->getName();
+            }
+			$response->setHeader('X-Magento-LoggedIn', $loggedIn ? '1' : '0', true); // Only for debugging and information
+            $cookie->set('aoestatic_customername', $name, '3600', '/');
 		}
+		$response->setHeader('X-Magento-Action', $fullActionName, true); // Only for debugging and information
 
 		return $this;
 	}
