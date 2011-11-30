@@ -52,7 +52,7 @@ class Aoe_Static_Block_Beforebodyend extends Mage_Core_Block_Template {
 	 * @return int
 	 */
 	public function getCartSummaryCount() {
-		return Mage::helper('checkout/cart')->getSummaryCount();
+		// return Mage::helper('checkout/cart')->getSummaryCount();
 	}
 
 }

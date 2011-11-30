@@ -33,9 +33,7 @@ class Aoe_Static_Model_Observer
 			$response->setHeader('aoestatic', 'cache', true);
 		} else {
 			// do not allow caching
-			$itemsInCart = Mage::helper('checkout/cart')->getSummaryCount();
 			$cookie = Mage::getModel('core/cookie'); /* @var $cookie Mage_Core_Model_Cookie */
-			$cookie->set('aoestatic_itemsincart', $itemsInCart);
 
 			$name = '';
 			$loggedIn = false;
