@@ -43,7 +43,8 @@ class Aoe_Static_Model_Observer
 				$name = $session->getCustomer()->getName();
             }
 			$response->setHeader('X-Magento-LoggedIn', $loggedIn ? '1' : '0', true); // Only for debugging and information
-            $cookie->set('aoestatic_customername', $name, '3600', '/');
+			$response->setHeader('Cache-Control', 'no-cache');
+			$cookie->set('aoestatic_customername', $name, '3600', '/');
 		}
 		$response->setHeader('X-Magento-Action', $fullActionName, true); // Only for debugging and information
 
