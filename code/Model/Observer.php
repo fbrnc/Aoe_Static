@@ -7,48 +7,98 @@
  * @author		Fabrizio Branca <mail@fabrizio-branca.de>
  * @author      Toni Grigoriu <toni@tonigrigoriu.com>
  */
-class Aoe_Static_Model_Observer
-{
+class Aoe_Static_Model_Observer {
+
+	/**
+	 * @var Aoe_Static_Model_Config
+	 */
+	protected $_config;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->_config = Mage::getSingleton('aoestatic/config');
+	}
+
 	/**
 	 * Check when varnish caching should be enabled.
 	 *
 	 * @param Varien_Event_Observer $observer
 	 * @return Aoe_Static_Model_Observer
 	 */
-	public function processPreDispatch(Varien_Event_Observer $observer)
-	{
-
-		$helper = Mage::helper('aoestatic'); /* @var $helper Aoe_Static_Helper_Data */
+	public function processPreDispatch(Varien_Event_Observer $observer) {
 		$event = $observer->getEvent(); /* @var $event Varien_Event */
 		$controllerAction = $event->getControllerAction(); /* @var $controllerAction Mage_Core_Controller_Varien_Action */
 		$fullActionName = $controllerAction->getFullActionName();
 
-		$lifetime = $helper->isCacheableAction($fullActionName);
-
 		$response = $controllerAction->getResponse(); /* @var $response Mage_Core_Controller_Response_Http */
-		if ($lifetime) {
-			// allow caching
-			$response->setHeader('X-Magento-Lifetime', $lifetime, true); // Only for debugging and information
-			$response->setHeader('Cache-Control', 'max-age='. $lifetime, true);
-			$response->setHeader('aoestatic', 'cache', true);
-		} else {
-			// do not allow caching
-			$cookie = Mage::getModel('core/cookie'); /* @var $cookie Mage_Core_Model_Cookie */
 
-			$name = '';
-			$loggedIn = false;
-			$session = Mage::getSingleton('customer/session'); /* @var $session Mage_Customer_Model_Session  */
-			if ($session->isLoggedIn()) {
-				$loggedIn = true;
-				$name = $session->getCustomer()->getName();
-            }
-			$response->setHeader('X-Magento-LoggedIn', $loggedIn ? '1' : '0', true); // Only for debugging and information
-			$response->setHeader('Cache-Control', 'no-cache');
-			$cookie->set('aoestatic_customername', $name, '3600', '/');
+		// gather information for replace array
+		$customerName = '';
+		$loggedIn = '0';
+		$session = Mage::getSingleton('customer/session'); /* @var $session Mage_Customer_Model_Session  */
+		if ($session->isLoggedIn()) {
+			$loggedIn = '0';
+			$customerName = $session->getCustomer()->getName();
 		}
-		$response->setHeader('X-Magento-Action', $fullActionName, true); // Only for debugging and information
+
+		$replace = array(
+			'###FULLACTIONNAME###' => $fullActionName,
+			'###CUSTOMERNAME###' => $customerName,
+			'###ISLOGGEDIN###' => $loggedIn
+		);
+
+		// apply default configuration in any case
+		$defaultConf = $this->_config->getActionConfiguration('default');
+		if ($defaultConf) {
+			$this->applyConf($defaultConf, $response, $replace);
+		}
+
+		// check if there is a configured configuration for this full action name
+		$conf = $this->_config->getActionConfiguration($fullActionName);
+		if (!$conf) {
+			// load the "uncached" configuration if no other configuration was found
+			$conf = $this->_config->getActionConfiguration('uncached');
+		}
+
+		// apply the configuration
+		if ($conf) {
+			$this->applyConf($conf, $response, $replace);
+		}
 
 		return $this;
+	}
+
+	/**
+	 * Apply configuration (set headers and cookies)
+	 *
+	 * @param Mage_Core_Model_Config_Element $conf
+	 * @param Mage_Core_Controller_Response_Http $response
+	 * @param array $replace
+	 */
+	protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response, array $replace) {
+		foreach ($conf->headers->children() as $key => $value) {
+			$value = str_replace(array_keys($replace), array_values($replace), $value);
+			$response->setHeader($key, $value, true);
+		}
+		if ($conf->cookies) {
+			$cookie = Mage::getModel('core/cookie'); /* @var $cookie Mage_Core_Model_Cookie */
+			foreach ($conf->cookies->children() as $name => $cookieConf) {
+				if (1 == $cookieConf->disabled) {
+					continue;
+				}
+				$value = (string)$cookieConf->value;
+				$value = str_replace(array_keys($replace), array_values($replace), $value);
+				$period = $cookieConf->period ? (string)$cookieConf->period : null;
+				$path = $cookieConf->path ? (string)$cookieConf->path : null;
+				$domain = $cookieConf->domain ? (string)$cookieConf->domain : null;
+				$secure = $cookieConf->secure ? (string)$cookieConf->secure : null;
+				$httponly = $cookieConf->httponly ? (string)$cookieConf->httponly : null;
+
+				$cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
+			}
+		}
 	}
 
 	/**
@@ -56,16 +106,14 @@ class Aoe_Static_Model_Observer
 	 *
 	 * @param Varien_Event_Observer $observer
 	 */
-	public function beforeLoadLayout(Varien_Event_Observer $observer)
-	{
-		$helper = Mage::helper('aoestatic'); /* @var $helper Aoe_Static_Helper_Data */
+	public function beforeLoadLayout(Varien_Event_Observer $observer) {
 		$event = $observer->getEvent(); /* @var $event Varien_Event */
 		$controllerAction = $event->getAction(); /* @var $controllerAction Mage_Core_Controller_Varien_Action */
 		$fullActionName = $controllerAction->getFullActionName();
 
-		$lifetime = $helper->isCacheableAction($fullActionName);
+		$conf = $this->_config->getActionConfiguration($fullActionName);
 
-		$handle = $lifetime ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
+		$handle = $conf ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
 
 		$observer->getEvent()->getLayout()->getUpdate()->addHandle($handle);
 	}
