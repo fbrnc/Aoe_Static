@@ -45,9 +45,8 @@
 		<!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
 		<uncached>
 			<headers>
-				<X-Magento-LoggedIn>###LOGGEDIN###</X-Magento-LoggedIn>
+				<X-Magento-LoggedIn>###ISLOGGEDIN###</X-Magento-LoggedIn>
 				<Cache-Control>no-cache</Cache-Control>
-				<aoestatic>cache</aoestatic>
 			</headers>
 			<cookies>
 				<aoestatic_customername>
