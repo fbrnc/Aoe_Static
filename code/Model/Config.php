@@ -1,33 +1,54 @@
 <?php
 
-class Aoe_Static_Model_Config extends Varien_Simplexml_Config {
+class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
+
+    /**
+     * Key name for storage of cache data
+     *
+     * @var string
+     */
+    const CACHE_KEY_NAME = 'cache_config';
+    /**
+     * Tag name for cache type, used in mass cache cleaning
+     *
+     * @var string
+     */
+    const CACHE_TAG_NAME = 'config';
+    /**
+     * Filename that will be collected from different modules
+     *
+     * @var string
+     */
+    const CONFIGURATION_FILENAME = 'aoe_static.xml';
+    /**
+     * Initial configuration file template, then merged in one file
+     *
+     * @var string
+     */
+    const CONFIGURATION_TEMPLATE = '<?xml version="1.0"?><config></config>';
 
     /**
      * Class constructor
      * load cache configuration
      *
-     * @param $data
+     * @param string $sourceData
      */
-    public function __construct($data = null) {
-        parent::__construct($data);
-        $this->setCacheId('cache_config');
-        $this->_cacheChecksum   = null;
-        $this->_cache = Mage::app()->getCache();
-
-        $canUsaCache = Mage::app()->useCache('config');
-        if ($canUsaCache) {
-            if ($this->loadCache()) {
-                return $this;
+    public function __construct($sourceData = null)
+    {
+        $tags = array(self::CACHE_TAG_NAME);
+        $useCache = Mage::app()->useCache(self::CACHE_TAG_NAME);
+        $this->setCacheId(self::CACHE_KEY_NAME);
+        $this->setCacheTags($tags);
+        if ($useCache && ($cache = Mage::app()->loadCache(self::CACHE_KEY_NAME))) {
+            parent::__construct($cache);
+        } else {
+            parent::__construct(self::CONFIGURATION_TEMPLATE);
+            Mage::getConfig()->loadModulesConfiguration(self::CONFIGURATION_FILENAME, $this);
+            if ($useCache) {
+                $xmlString = $this->getXmlString();
+                Mage::app()->saveCache($xmlString, self::CACHE_KEY_NAME, $tags);
             }
         }
-
-        $config = Mage::getConfig()->loadModulesConfiguration('aoe_static.xml');
-        $this->setXml($config->getNode());
-
-        if ($canUsaCache) {
-            $this->saveCache(array(Mage_Core_Model_Config::CACHE_TAG));
-        }
-        return $this;
     }
 
 	/**
