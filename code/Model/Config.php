@@ -7,13 +7,13 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
      *
      * @var string
      */
-    const CACHE_KEY_NAME = 'cache_config';
+    const CACHE_ID = 'aoe_static_cache';
     /**
      * Tag name for cache type, used in mass cache cleaning
      *
      * @var string
      */
-    const CACHE_TAG_NAME = 'config';
+    const CACHE_TAG = 'config';
     /**
      * Filename that will be collected from different modules
      *
@@ -35,18 +35,18 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
      */
     public function __construct($sourceData = null)
     {
-        $tags = array(self::CACHE_TAG_NAME);
-        $useCache = Mage::app()->useCache(self::CACHE_TAG_NAME);
-        $this->setCacheId(self::CACHE_KEY_NAME);
+        $tags = array(self::CACHE_TAG);
+        $useCache = Mage::app()->useCache('config');
+        $this->setCacheId(self::CACHE_ID);
         $this->setCacheTags($tags);
-        if ($useCache && ($cache = Mage::app()->loadCache(self::CACHE_KEY_NAME))) {
+        if ($useCache && ($cache = Mage::app()->loadCache(self::CACHE_ID))) {
             parent::__construct($cache);
         } else {
             parent::__construct(self::CONFIGURATION_TEMPLATE);
             Mage::getConfig()->loadModulesConfiguration(self::CONFIGURATION_FILENAME, $this);
             if ($useCache) {
                 $xmlString = $this->getXmlString();
-                Mage::app()->saveCache($xmlString, self::CACHE_KEY_NAME, $tags);
+                Mage::app()->saveCache($xmlString, self::CACHE_ID, $tags);
             }
         }
     }
