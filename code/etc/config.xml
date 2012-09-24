@@ -5,7 +5,7 @@
 		<Aoe_Static>
 			<active>true</active>
 			<codePool>local</codePool>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</Aoe_Static>
 	</modules>
 
