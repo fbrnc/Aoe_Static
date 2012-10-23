@@ -31,6 +31,7 @@
 			- ###FULLACTIONNAME###
 			- ###CUSTOMERNAME###
 			- ###ISLOGGEDIN###
+			- ###NUMBEROFITEMSINCART
 
 		</default|uncached|$fullActionName>
 		-->
@@ -57,6 +58,14 @@
 					<secure></secure>
 					<httponly></httponly> -->
 				</aoestatic_customername>
+				<aoestatic_numberofitemsincart>
+					<value>###NUMBEROFITEMSINCART###</value>
+					<period>3600</period>
+					<path><![CDATA[/]]></path>
+					<!-- <domain></domain>
+					<secure></secure>
+					<httponly></httponly> -->
+				</aoestatic_numberofitemsincart>
 			</cookies>
 		</uncached>
 
