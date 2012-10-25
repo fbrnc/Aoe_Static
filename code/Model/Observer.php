@@ -47,7 +47,7 @@ class Aoe_Static_Model_Observer {
 			'###FULLACTIONNAME###' => $fullActionName,
 			'###CUSTOMERNAME###' => $customerName,
 			'###ISLOGGEDIN###' => $loggedIn,
-            '###NUMBEROFITEMSINCART' => Mage::helper('checkout/cart')->getSummaryCount(),
+            '###NUMBEROFITEMSINCART###' => Mage::helper('checkout/cart')->getSummaryCount(),
 		);
 
 		// apply default configuration in any case
