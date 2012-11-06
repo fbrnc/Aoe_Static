@@ -94,8 +94,8 @@ class Aoe_Static_Model_Observer {
 				$period = $cookieConf->period ? (string)$cookieConf->period : null;
 				$path = $cookieConf->path ? (string)$cookieConf->path : null;
 				$domain = $cookieConf->domain ? (string)$cookieConf->domain : null;
-				$secure = $cookieConf->secure ? (string)$cookieConf->secure : null;
-				$httponly = $cookieConf->httponly ? (string)$cookieConf->httponly : null;
+				$secure = $cookieConf->secure ? filter_var($cookieConf->secure, FILTER_VALIDATE_BOOLEAN) : null;
+				$httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
 
 				$cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
 			}

@@ -55,16 +55,16 @@
 					<period>3600</period>
 					<path><![CDATA[/]]></path>
 					<!-- <domain></domain>
-					<secure></secure>
-					<httponly></httponly> -->
+					<secure></secure>-->
+					<httponly>0</httponly>
 				</aoestatic_customername>
 				<aoestatic_numberofitemsincart>
 					<value>###NUMBEROFITEMSINCART###</value>
 					<period>3600</period>
 					<path><![CDATA[/]]></path>
 					<!-- <domain></domain>
-					<secure></secure>
-					<httponly></httponly> -->
+					<secure></secure>-->
+					<httponly>0</httponly>
 				</aoestatic_numberofitemsincart>
 			</cookies>
 		</uncached>
