@@ -34,6 +34,7 @@ jQuery(document).ready(function($) {
 		data.currentProductId = CURRENTPRODUCTID;
 	}
 
+    data.returnUrl = RETURNURL;
 	// E.T. phone home
 	if (typeof data.currentProductId !== 'undefined' || counter > 0) {
 		$.get(

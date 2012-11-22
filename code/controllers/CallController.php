@@ -19,6 +19,8 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action {
 	public function indexAction() {
 
 		// if (!$this->getRequest()->isXmlHttpRequest()) { Mage::throwException('This is not an XmlHttpRequest'); }
+        $returnUrl = $this->getRequest()->getParam('returnUrl');
+        Mage::getSingleton('core/session')->setReturnUrl($returnUrl);
 
 		$response = array();
 		$response['sid'] = Mage::getModel('core/session')->getEncryptedSessionId();
@@ -41,7 +43,9 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action {
 				}
 			}
 		}
-		$this->getResponse()->setBody(Zend_Json::encode($response));
+        Mage::getSingleton('core/session')->unsReturnUrl();
+
+        $this->getResponse()->setBody(Zend_Json::encode($response));
 	}
 
 }
