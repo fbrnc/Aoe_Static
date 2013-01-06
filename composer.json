@@ -1,0 +1,16 @@
+{
+    "name":"fbrnc/aoe_static",
+    "type":"magento-module",
+    "license":"OSL-3.0",
+    "homepage":"http://www.fabrizio-branca.de/make-your-magento-store-fly-using-varnish.html",
+    "description":"Varnish Integration for Magento.",
+    "authors":[
+        {
+            "name":"Fabrizio Branca",
+            "email":"mail@{firstname}-{lastname}.de"
+        }
+    ],
+    "require":{
+        "magento-hackathon/magento-composer-installer":"dev-master"
+    }
+}
