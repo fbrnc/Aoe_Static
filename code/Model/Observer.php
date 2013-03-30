@@ -123,7 +123,7 @@ class Aoe_Static_Model_Observer
         Mage_Core_Controller_Response_Http $response
     ) {
         // apply custom max-age from db
-        $urls = array($request->getRequestUri());
+        $urls = array($request->getRequestString());
         $alias = $request->getAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS);
         if ($alias) {
             $urls[] = $alias;
