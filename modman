@@ -3,5 +3,4 @@ js/aoestatic/                    js/aoestatic/
 frontend/layout/aoestatic/       app/design/frontend/base/default/layout/aoestatic/
 frontend/template/aoestatic/     app/design/frontend/base/default/template/aoestatic/
 adminhtml/layout/aoestatic/      app/design/adminhtml/default/default/layout/aoestatic/
-adminhtml/template/aoestatic/    app/design/adminhtml/default/default/template/aoestatic/
 Aoe_Static.xml                   app/etc/modules/Aoe_Static.xml
