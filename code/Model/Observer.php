@@ -130,6 +130,7 @@ class Aoe_Static_Model_Observer
         }
         /** @var $customUrlModel Aoe_Static_Model_CustomUrl */
         $customUrlModel = Mage::getModel('aoestatic/customUrl');
+        $customUrlModel->setStoreId(Mage::app()->getStore()->getId());
         $customUrlModel->loadByRequestPath($urls);
 
         if ($customUrlModel->getId() && $customUrlModel->getMaxAge()) {
