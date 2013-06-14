@@ -37,11 +37,18 @@
 		-->
 
 		<!-- This will be applied in any case -->
-		<default>
-			<headers>
-				<X-Magento-Action>###FULLACTIONNAME###</X-Magento-Action>
-			</headers>
-		</default>
+        <default>
+            <headers>
+                <X-Magento-Action>###FULLACTIONNAME###</X-Magento-Action>
+            </headers>
+            <markers>
+                <!-- Additional markers, here without hashes
+                <MARKERNAMEWITHOUTHASHES>
+                    <valueCallback>some_module/fooclass::getValue</valueCallback>
+                </MARKERNAMEWITHOUTHASHES>
+                -->
+            </markers>
+        </default>
 
 		<!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
 		<uncached>

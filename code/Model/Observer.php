@@ -15,6 +15,12 @@ class Aoe_Static_Model_Observer
     protected $_config;
 
     /**
+     * Local cache for calculated values of markers
+     * @var null | array
+     */
+    protected $markersValues = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -49,7 +55,7 @@ class Aoe_Static_Model_Observer
             $customerName = Mage::helper('core')->escapeHtml($session->getCustomer()->getName());
         }
 
-        $replace = array(
+        $this->markersValues = array(
             '###FULLACTIONNAME###'      => $fullActionName,
             '###CUSTOMERNAME###'        => $customerName,
             '###ISLOGGEDIN###'          => $loggedIn,
@@ -59,7 +65,7 @@ class Aoe_Static_Model_Observer
         // apply default configuration in any case
         $defaultConf = $this->_config->getActionConfiguration('default');
         if ($defaultConf) {
-            $this->applyConf($defaultConf, $response, $replace);
+            $this->applyConf($defaultConf, $response);
         }
 
         // check if there is a configured configuration for this full action name
@@ -71,7 +77,7 @@ class Aoe_Static_Model_Observer
 
         // apply the configuration
         if ($conf) {
-            $this->applyConf($conf, $response, $replace);
+            $this->applyConf($conf, $response);
         }
 
         $this->_applyCustomMaxAgeFromDb($controllerAction->getRequest(), $response);
@@ -84,13 +90,10 @@ class Aoe_Static_Model_Observer
      *
      * @param Mage_Core_Model_Config_Element $conf
      * @param Mage_Core_Controller_Response_Http $response
-     * @param array $replace
      */
-    protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response,
-        array $replace
-    ) {
+    protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response) {
         foreach ($conf->headers->children() as $key => $value) {
-            $value = str_replace(array_keys($replace), array_values($replace), $value);
+            $value = $this->replaceMarkers($value);
             $response->setHeader($key, $value, true);
         }
         if ($conf->cookies) {
@@ -101,7 +104,7 @@ class Aoe_Static_Model_Observer
                     continue;
                 }
                 $value    = (string) $cookieConf->value;
-                $value    = str_replace(array_keys($replace), array_values($replace), $value);
+                $value    = $this->replaceMarkers($value);
                 $period   = $cookieConf->period ? (string) $cookieConf->period : null;
                 $path     = $cookieConf->path ? (string) $cookieConf->path : null;
                 $domain   = $cookieConf->domain ? (string) $cookieConf->domain : null;
@@ -158,5 +161,70 @@ class Aoe_Static_Model_Observer
         $handle = $conf ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
 
         $observer->getEvent()->getLayout()->getUpdate()->addHandle($handle);
+    }
+
+    /**
+     * Replaces markers in the $value, saves calculated value to the local cache
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function replaceMarkers($value) {
+        $matches = array();
+        preg_match_all('|###[^#]+###|', $value, $matches);
+        $markersWithoutValues = array_diff($matches[0], array_keys($this->markersValues));
+        foreach($markersWithoutValues as $marker) {
+            $this->markersValues[$marker] = $this->getMarkerValue($marker);
+        }
+        $value = str_replace(array_keys($this->markersValues), array_values($this->markersValues), $value);
+        return $value;
+    }
+
+    /**
+     * Returns value of a given marker
+     *
+     * @param string $marker
+     * @return string
+     */
+    protected function getMarkerValue($marker) {
+        $markerValue = $marker;
+        if (isset($this->markersValues[$marker]) && $this->markersValues[$marker] !== NULL) {
+            $markerValue = $this->markersValues[$marker];
+        } elseif ($this->_config->getMarkerCallback($marker)) {
+            $markerValue = $this->executeCallback($this->_config->getMarkerCallback($marker));
+        }
+        return (string)$markerValue;
+    }
+
+    /**
+     * Executes method defined in the marker callback configuration and returns the result
+     *
+     * @param string $callbackString
+     * @return mixed
+     */
+    protected function executeCallback($callbackString) {
+        $result = "";
+        try {
+
+            if ($callbackString) {
+                if (!preg_match(Mage_Cron_Model_Observer::REGEX_RUN_MODEL, (string)$callbackString, $run)) {
+                    Mage::throwException('Invalid model/method definition, expecting "model/class::method".');
+                }
+                if (!($model = Mage::getModel($run[1])) || !method_exists($model, $run[2])) {
+                    Mage::throwException('Invalid callback: %s::%s does not exist', $run[1], $run[2]);
+                }
+                $callback = array($model, $run[2]);
+                $arguments = array();
+            }
+            if (empty($callback)) {
+                Mage::throwException(Mage::helper('cron')->__('No callbacks found for marker'));
+            }
+
+            $result = call_user_func_array($callback, $arguments);
+
+        } catch (Exception $e) {
+            Mage::logException($e);
+        }
+        return $result;
     }
 }

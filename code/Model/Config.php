@@ -8,24 +8,29 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
      * @var string
      */
     const CACHE_ID = 'aoe_static_cache';
+
     /**
      * Tag name for cache type, used in mass cache cleaning
      *
      * @var string
      */
     const CACHE_TAG = 'config';
+
     /**
      * Filename that will be collected from different modules
      *
      * @var string
      */
     const CONFIGURATION_FILENAME = 'aoe_static.xml';
+
     /**
      * Initial configuration file template, then merged in one file
      *
      * @var string
      */
     const CONFIGURATION_TEMPLATE = '<?xml version="1.0"?><config></config>';
+
+    protected $markers = NULL;
 
     /**
      * Class constructor
@@ -69,4 +74,29 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
 		return $configuration;
 	}
 
+    /**
+     * @return Varien_Simplexml_Element
+     */
+    public function getMarkersCallbackConfiguration() {
+        if ($this->markers !== NULL) {
+            return $this->markers;
+        }
+        $this->markers = $this->getNode('aoe_static/default/markers');
+        return $this->markers;
+    }
+
+    /**
+     * Get callback string like some_module/fooclass::getValue for a given marker name
+     * @param $marker string
+     * @return string callback
+     */
+    public function getMarkerCallback($marker) {
+        $callback = '';
+        $configuration = $this->getMarkersCallbackConfiguration();
+        $markerWithoutHash = str_replace('#', '',$marker);
+        if (isset($configuration->$markerWithoutHash->valueCallback)) {
+            $callback = (string)$configuration->$markerWithoutHash->valueCallback;
+        }
+        return $callback;
+    }
 }
