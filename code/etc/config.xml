@@ -4,7 +4,7 @@
         <Aoe_Static>
             <active>true</active>
             <codePool>local</codePool>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </Aoe_Static>
     </modules>
 
@@ -63,14 +63,14 @@
 
         <events>
             <!-- Setting the response headers to control varnish -->
-            <controller_action_predispatch>
+            <controller_action_postdispatch>
                 <observers>
                     <aoestatic>
                         <class>aoestatic/observer</class>
-                        <method>processPreDispatch</method>
+                        <method>processPostDispatch</method>
                     </aoestatic>
                 </observers>
-            </controller_action_predispatch>
+            </controller_action_postdispatch>
 
             <!-- Creating a new layout handle "aoestatic_cacheable" or "aoestatic_notcacheable"-->
             <controller_action_layout_load_before>

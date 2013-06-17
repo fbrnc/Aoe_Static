@@ -29,12 +29,12 @@ class Aoe_Static_Model_Observer
     }
 
     /**
-     * Check when varnish caching should be enabled.
+     * Set custom headers and cookies
      *
      * @param Varien_Event_Observer $observer
      * @return Aoe_Static_Model_Observer
      */
-    public function processPreDispatch(Varien_Event_Observer $observer)
+    public function processPostDispatch(Varien_Event_Observer $observer)
     {
         /* @var $event Varien_Event */
         $event = $observer->getEvent();
