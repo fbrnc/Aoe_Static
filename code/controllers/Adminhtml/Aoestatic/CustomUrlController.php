@@ -213,4 +213,32 @@ class Aoe_Static_Adminhtml_Aoestatic_CustomUrlController extends Mage_Adminhtml_
         $this->loadLayout();
         $this->renderLayout();
     }
+
+    /**
+     * Mass delete action
+     */
+    public function massDeleteAction()
+    {
+        $customUrlIds = $this->getRequest()->getParam('custom_url_ids');
+        if (!is_array($customUrlIds)) {
+            $this->_getSession()->addError(
+                Mage::helper('aoestatic')->__('Please select custom url(s) to delete.')
+            );
+        } else {
+            if (!empty($customUrlIds)) {
+                try {
+                    foreach ($customUrlIds as $customUrlId) {
+                        Mage::getModel('aoestatic/customUrl')->setId($customUrlId)
+                            ->delete();
+                    }
+                    $this->_getSession()->addSuccess(
+                        Mage::helper('aoestatic')->__('Total of %d custom url(s) have been deleted.', count($customUrlIds))
+                    );
+                } catch (Exception $e) {
+                    $this->_getSession()->addError(Mage::helper('aoestatic')->__($e->getMessage()));
+                }
+            }
+        }
+        $this->_redirectReferer();
+    }
 }

@@ -50,14 +50,14 @@ class Aoe_Static_Block_Adminhtml_CustomUrl_Grid extends Mage_Adminhtml_Block_Wid
     protected function _prepareColumns()
     {
         $this->addColumn('custom_url_id', array(
-            'header' => $this->__('ID'),
-            'width'  => '50px',
+            'header' => Mage::helper('aoestatic')->__('ID'),
+            'width'  => '10px',
             'index'  => 'custom_url_id'
         ));
 
         if (!Mage::app()->isSingleStoreMode()) {
             $this->addColumn('store_id', array(
-                'header'     => $this->__('Store View'),
+                'header'     => Mage::helper('aoestatic')->__('Store View'),
                 'width'      => '200px',
                 'index'      => 'store_id',
                 'type'       => 'store',
@@ -66,19 +66,57 @@ class Aoe_Static_Block_Adminhtml_CustomUrl_Grid extends Mage_Adminhtml_Block_Wid
         }
 
         $this->addColumn('request_path', array(
-            'header' => $this->__('Request Path'),
-            'width'  => '50px',
+            'header' => Mage::helper('aoestatic')->__('Request Path'),
+            'width'  => '80%',
             'index'  => 'request_path'
         ));
         $this->addColumn('max_age', array(
-            'header' => $this->__('Max Age'),
+            'header' => Mage::helper('aoestatic')->__('Max Age'),
             'width'  => '50px',
             'index'  => 'max_age'
         ));
 
+        $this->addColumn('action',
+            array(
+                'header'    => Mage::helper('aoestatic')->__('Actions'),
+                'width'     => '50px',
+                'type'      => 'action',
+                'getter'    => 'getId',
+                'actions'   => array(
+                    array(
+                        'caption' => Mage::helper('aoestatic')->__('Delete'),
+                        'url'     => array(
+                            'base' => '*/*/delete',
+                        ),
+                        'field'   => 'id',
+                        'confirm' => Mage::helper('aoestatic')->__('Are you sure you want to delete custom url?')
+                    )
+                ),
+                'filter'    => false,
+                'sortable'  => false,
+            )
+        );
+
         return parent::_prepareColumns();
     }
 
+    /**
+     * Prepare grid massaction actions
+     *
+     * @return $this
+     */
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('custom_url_id');
+        $this->getMassactionBlock()->setFormFieldName('custom_url_ids');
+        $this->getMassactionBlock()->addItem('delete', array(
+            'label'   => Mage::helper('aoestatic')->__('Delete'),
+            'url'     => $this->getUrl('*/*/massDelete'),
+            'confirm' => Mage::helper('aoestatic')->__('Are you sure you want delete selected custom url(s)?')
+        ));
+
+        return $this;
+    }
     /**
      * Grid url getter
      *
