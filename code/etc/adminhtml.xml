@@ -31,13 +31,6 @@
                                     </delete>
                                 </children>
                             </aoestatic_customUrl>
-                            <config>
-                                <children>
-                                    <news translate="title" module="aoestatic">
-                                        <title>Urls max-age management</title>
-                                    </news>
-                                </children>
-                            </config>
                         </children>
                     </system>
                 </children>
