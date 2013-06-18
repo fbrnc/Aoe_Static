@@ -234,8 +234,12 @@ class Aoe_Static_Adminhtml_Aoestatic_CustomUrlController extends Mage_Adminhtml_
                     $this->_getSession()->addSuccess(
                         Mage::helper('aoestatic')->__('Total of %d custom url(s) have been deleted.', count($customUrlIds))
                     );
+                } catch (Mage_Core_Exception $e) {
+                    $this->_getSession()->addError($e->getMessage());
                 } catch (Exception $e) {
-                    $this->_getSession()->addError(Mage::helper('aoestatic')->__($e->getMessage()));
+                    $this->_getSession()->addException($e,
+                        Mage::helper('aoestatic')->__('An error occurred while deleting custom url(s).')
+                    );
                 }
             }
         }
