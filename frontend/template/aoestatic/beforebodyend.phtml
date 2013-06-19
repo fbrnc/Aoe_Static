@@ -6,5 +6,6 @@
 	<?php if (($_product = Mage::registry('product')) == true) : ?>var CURRENTPRODUCTID = '<?php echo $_product->getId() ?>';<?php endif; ?>
 	var CUSTOMERNAME = '<?php echo $this->getCustomerName() ?>';
 	var CARTSUMMARYCOUNT = '<?php echo $this->getCartSummaryCount(); ?>';
+    var RETURNURL = '<?php echo $this->helper('core/url')->getCurrentUrl() ?>';
 //]]>
 </script>

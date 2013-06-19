@@ -24,6 +24,11 @@
 			<aoestatic>
 				<class>Aoe_Static_Helper</class>
 			</aoestatic>
+            <core>
+                <rewrite>
+                    <url>Aoe_Static_Helper_Url</url>
+                </rewrite>
+            </core>
 		</helpers>
 	</global>
 
