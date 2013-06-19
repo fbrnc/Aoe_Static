@@ -227,10 +227,9 @@ class Aoe_Static_Adminhtml_Aoestatic_CustomUrlController extends Mage_Adminhtml_
         } else {
             if (!empty($customUrlIds)) {
                 try {
-                    foreach ($customUrlIds as $customUrlId) {
-                        Mage::getModel('aoestatic/customUrl')->setId($customUrlId)
-                            ->delete();
-                    }
+                    /** @var Aoe_Static_Model_CustomUrl $customUrlModel */
+                    $customUrlModel = Mage::getModel('aoestatic/customUrl');
+                    $customUrlModel->deleteCustomUrls($customUrlIds);
                     $this->_getSession()->addSuccess(
                         Mage::helper('aoestatic')->__('Total of %d custom url(s) have been deleted.', count($customUrlIds))
                     );

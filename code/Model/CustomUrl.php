@@ -36,4 +36,15 @@ class Aoe_Static_Model_CustomUrl extends Mage_Core_Model_Abstract
         $this->_hasDataChanges = false;
         return $this;
     }
+
+    /**
+     * Delete custom urls with given ids
+     *
+     * @param array $customUrlIds
+     * @return $this
+     */
+    public function deleteCustomUrls(array $customUrlIds)
+    {
+        $this->getResource()->deleteCustomUrls($customUrlIds);
+    }
 }
