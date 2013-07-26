@@ -21,6 +21,12 @@ class Aoe_Static_Model_Observer
     protected $markersValues = null;
 
     /**
+     * Indicates, if there are messages to show on the current page
+     * @var bool
+     */
+    protected $messagesToShow = false;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -36,6 +42,9 @@ class Aoe_Static_Model_Observer
      */
     public function processPostDispatch(Varien_Event_Observer $observer)
     {
+        // check if we have messages to display
+        $this->messagesToShow = $this->checkForMessages();
+
         /* @var $event Varien_Event */
         $event = $observer->getEvent();
         /* @var $controllerAction Mage_Core_Controller_Varien_Action */
@@ -91,27 +100,30 @@ class Aoe_Static_Model_Observer
      * @param Mage_Core_Model_Config_Element $conf
      * @param Mage_Core_Controller_Response_Http $response
      */
-    protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response) {
-        foreach ($conf->headers->children() as $key => $value) {
-            $value = $this->replaceMarkers($value);
-            $response->setHeader($key, $value, true);
-        }
-        if ($conf->cookies) {
-            $cookie = Mage::getModel('core/cookie');
-            /* @var $cookie Mage_Core_Model_Cookie */
-            foreach ($conf->cookies->children() as $name => $cookieConf) {
-                if (1 == $cookieConf->disabled) {
-                    continue;
-                }
-                $value    = (string) $cookieConf->value;
-                $value    = $this->replaceMarkers($value);
-                $period   = $cookieConf->period ? (string) $cookieConf->period : null;
-                $path     = $cookieConf->path ? (string) $cookieConf->path : null;
-                $domain   = $cookieConf->domain ? (string) $cookieConf->domain : null;
-                $secure   = $cookieConf->secure ? filter_var($cookieConf->secure, FILTER_VALIDATE_BOOLEAN) : null;
-                $httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
+    protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response)
+    {
+        if (!$this->messagesToShow) {
+            foreach ($conf->headers->children() as $key => $value) {
+                $value = $this->replaceMarkers($value);
+                $response->setHeader($key, $value, true);
+            }
+            if ($conf->cookies) {
+                $cookie = Mage::getModel('core/cookie');
+                /* @var $cookie Mage_Core_Model_Cookie */
+                foreach ($conf->cookies->children() as $name => $cookieConf) {
+                    if (1 == $cookieConf->disabled) {
+                        continue;
+                    }
+                    $value    = (string) $cookieConf->value;
+                    $value    = $this->replaceMarkers($value);
+                    $period   = $cookieConf->period ? (string) $cookieConf->period : null;
+                    $path     = $cookieConf->path ? (string) $cookieConf->path : null;
+                    $domain   = $cookieConf->domain ? (string) $cookieConf->domain : null;
+                    $secure   = $cookieConf->secure ? filter_var($cookieConf->secure, FILTER_VALIDATE_BOOLEAN) : null;
+                    $httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
 
-                $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
+                    $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
+                }
             }
         }
     }
@@ -125,21 +137,23 @@ class Aoe_Static_Model_Observer
     protected function _applyCustomMaxAgeFromDb(Mage_Core_Controller_Request_Http $request,
         Mage_Core_Controller_Response_Http $response
     ) {
-        // apply custom max-age from db
-        $urls = array($request->getRequestString());
-        $alias = $request->getAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS);
-        if ($alias) {
-            $urls[] = $alias;
-        }
-        /** @var $customUrlModel Aoe_Static_Model_CustomUrl */
-        $customUrlModel = Mage::getModel('aoestatic/customUrl');
-        $customUrlModel->setStoreId(Mage::app()->getStore()->getId());
-        $customUrlModel->loadByRequestPath($urls);
+        if (!$this->messagesToShow) {
+            // apply custom max-age from db
+            $urls = array($request->getRequestString());
+            $alias = $request->getAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS);
+            if ($alias) {
+                $urls[] = $alias;
+            }
+            /** @var $customUrlModel Aoe_Static_Model_CustomUrl */
+            $customUrlModel = Mage::getModel('aoestatic/customUrl');
+            $customUrlModel->setStoreId(Mage::app()->getStore()->getId());
+            $customUrlModel->loadByRequestPath($urls);
 
-        if ($customUrlModel->getId() && $customUrlModel->getMaxAge()) {
-            $response->setHeader('Cache-Control', 'max-age=' . (int) $customUrlModel->getMaxAge(), true);
-            $response->setHeader('X-Magento-Lifetime', (int) $customUrlModel->getMaxAge(), true);
-            $response->setHeader('aoestatic', 'cache', true);
+            if ($customUrlModel->getId() && $customUrlModel->getMaxAge()) {
+                $response->setHeader('Cache-Control', 'max-age=' . (int) $customUrlModel->getMaxAge(), true);
+                $response->setHeader('X-Magento-Lifetime', (int) $customUrlModel->getMaxAge(), true);
+                $response->setHeader('aoestatic', 'cache', true);
+            }
         }
     }
 
@@ -150,6 +164,9 @@ class Aoe_Static_Model_Observer
      */
     public function beforeLoadLayout(Varien_Event_Observer $observer)
     {
+        // check if we have messages to display
+        $this->messagesToShow = $this->checkForMessages();
+
         $event = $observer->getEvent();
         /* @var $event Varien_Event */
         $controllerAction = $event->getAction();
@@ -226,5 +243,22 @@ class Aoe_Static_Model_Observer
             Mage::logException($e);
         }
         return $result;
+    }
+
+    /**
+     * Checks if there are messages to display
+     *
+     * @return bool
+     */
+    protected function checkForMessages()
+    {
+        if (
+            (false === $this->messagesToShow) &&
+            (Mage::app()->getLayout()->getMessagesBlock()->getMessageCollection()->count() > 0)
+        ) {
+            $this->messagesToShow = true;
+        }
+
+        return $this->messagesToShow;
     }
 }
