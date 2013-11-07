@@ -89,9 +89,31 @@ class Aoe_Static_Model_Observer
             $this->applyConf($conf, $response);
         }
 
+        $this->_applyRegistryMaxAge($response);
         $this->_applyCustomMaxAgeFromDb($controllerAction->getRequest(), $response);
 
         return $this;
+    }
+
+    /**
+     * Apply a custom registry-stored max-age header (e.g. for special products)
+     * returns true if a max-age header was set
+     *
+     * @param Mage_Core_Controller_Response_Http $response
+     * @return bool
+     */
+    protected function _applyRegistryMaxAge(Mage_Core_Controller_Response_Http $response)
+    {
+        if (!$maxAge = Mage::registry(Aoe_Static_Helper_Data::REGISTRY_MAX_AGE)) {
+            return false;
+        }
+        if (!$this->messagesToShow && ($maxAge > 0)) {
+            $response->setHeader('Cache-Control', 'max-age=' . (int) $maxAge, true);
+            $response->setHeader('X-Magento-Lifetime', (int) $maxAge, true);
+            $response->setHeader('aoestatic', 'cache', true);
+            return true;
+        }
+        return false;
     }
 
     /**
