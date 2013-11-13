@@ -210,7 +210,8 @@ class Aoe_Static_Model_Observer
      * @param string $value
      * @return string
      */
-    protected function replaceMarkers($value) {
+    protected function replaceMarkers($value)
+    {
         $matches = array();
         preg_match_all('|###[^#]+###|', $value, $matches);
         $markersWithoutValues = array_diff($matches[0], array_keys($this->markersValues));
@@ -227,7 +228,8 @@ class Aoe_Static_Model_Observer
      * @param string $marker
      * @return string
      */
-    protected function getMarkerValue($marker) {
+    protected function getMarkerValue($marker)
+    {
         $markerValue = $marker;
         if (isset($this->markersValues[$marker]) && $this->markersValues[$marker] !== NULL) {
             $markerValue = $this->markersValues[$marker];
@@ -243,10 +245,10 @@ class Aoe_Static_Model_Observer
      * @param string $callbackString
      * @return mixed
      */
-    protected function executeCallback($callbackString) {
+    protected function executeCallback($callbackString)
+    {
         $result = "";
         try {
-
             if ($callbackString) {
                 if (!preg_match(Mage_Cron_Model_Observer::REGEX_RUN_MODEL, (string)$callbackString, $run)) {
                     Mage::throwException('Invalid model/method definition, expecting "model/class::method".');
@@ -260,9 +262,7 @@ class Aoe_Static_Model_Observer
             if (empty($callback)) {
                 Mage::throwException(Mage::helper('cron')->__('No callbacks found for marker'));
             }
-
             $result = call_user_func_array($callback, $arguments);
-
         } catch (Exception $e) {
             Mage::logException($e);
         }
@@ -282,7 +282,6 @@ class Aoe_Static_Model_Observer
         ) {
             $this->messagesToShow = true;
         }
-
         return $this->messagesToShow;
     }
 }

@@ -1,0 +1,10 @@
+<?php /* @var $this Aoe_Static_Block_Beforebodyend */?>
+<script type="text/javascript">
+    <?php // TODO: rewrite recently viewed products feature to be handled client side using localStorage. In this case more data needs to be added here and stored in the client ?>
+    Aoe_Static.populatePage(
+        '<?php echo Mage::getUrl('phone/call/index', Mage::app()->getStore()->isCurrentlySecure() ? array('_secure' => 1) : array()) ?>',
+        '<?php echo $this->getAction()->getFullActionName() ?>',
+        <?php // This will report the current product id back to the server for the recently viewed product feature ?>
+        <?php echo ((($_product = Mage::registry('product')) == true) ? $_product->getId() : 0) ?>
+    );
+</script>

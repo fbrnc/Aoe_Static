@@ -1,7 +1,7 @@
 <?php
 
-class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
-
+class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
+{
     /**
      * Key name for storage of cache data
      *
@@ -30,6 +30,9 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
      */
     const CONFIGURATION_TEMPLATE = '<?xml version="1.0"?><config></config>';
 
+    /**
+     * @var null|array
+     */
     protected $markers = NULL;
 
     /**
@@ -56,32 +59,33 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
         }
     }
 
-	/**
-	 * Get action configuration
-	 *
-	 * @param $fullActionName
-	 * @return false|Mage_Core_Model_Config_Element
-	 */
-	public function getActionConfiguration($fullActionName) {
-		$configuration = $this->getNode('aoe_static/'.$fullActionName);
-		if (!$configuration || 1 == $configuration->disabled) {
-			return false;
-		}
-		$use = (string)$configuration->use;
-		if ($use) {
-			$configuration = $this->getActionConfiguration($use);
-		}
-		return $configuration;
-	}
+    /**
+     * Get action configuration
+     *
+     * @param $fullActionName
+     * @return false|Mage_Core_Model_Config_Element
+     */
+    public function getActionConfiguration($fullActionName)
+    {
+        $configuration = $this->getNode('aoe_static/'.$fullActionName);
+        if (!$configuration || (1 == $configuration->disabled)) {
+            return false;
+        }
+        $use = (string)$configuration->use;
+        if ($use) {
+            $configuration = $this->getActionConfiguration($use);
+        }
+        return $configuration;
+    }
 
     /**
      * @return Varien_Simplexml_Element
      */
-    public function getMarkersCallbackConfiguration() {
-        if ($this->markers !== NULL) {
-            return $this->markers;
+    public function getMarkersCallbackConfiguration()
+    {
+        if (is_null($this->markers)) {
+            $this->markers = $this->getNode('aoe_static/default/markers');
         }
-        $this->markers = $this->getNode('aoe_static/default/markers');
         return $this->markers;
     }
 
@@ -90,7 +94,8 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base {
      * @param $marker string
      * @return string callback
      */
-    public function getMarkerCallback($marker) {
+    public function getMarkerCallback($marker)
+    {
         $callback = '';
         $configuration = $this->getMarkersCallbackConfiguration();
         $markerWithoutHash = str_replace('#', '',$marker);
