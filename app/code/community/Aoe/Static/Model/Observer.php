@@ -241,7 +241,6 @@ class Aoe_Static_Model_Observer
     /**
      * Listens to application_clean_cache event and gets notified when a product/category/cms model is saved
      *
-     * @todo tzags isntead of urls
      * @param $observer Mage_Core_Model_Observer
      * @return Aoe_Static_Model_Observer
      */
@@ -270,7 +269,7 @@ class Aoe_Static_Model_Observer
             }
         }
 
-        $urls = array();
+        $tags = array();
         if ($tags == array()) {
             $errors = Mage::helper('aoestatic')->purgeAll();
             if (!empty($errors)) {
@@ -296,40 +295,36 @@ class Aoe_Static_Model_Observer
                 switch ($tag_fields[1]) {
                     case 'product':
                         // get urls for product
-                        $product = Mage::getModel('catalog/product')->load($tag_fields[2]);
-                        $urls = array_merge($urls, Mage::helper('aoestatic/url')->_getUrlsForProduct($product));
+                        $tags[] = 'product-' . $tag_fields[2];
                         break;
 
                     case 'category':
-                        $category = Mage::getModel('catalog/category')->load($tag_fields[2]);
-                        $category_urls = Mage::helper('aoestatic/url')->_getUrlsForCategory($category);
-                        $urls = array_merge($urls, $category_urls);
+                        $tags[] = 'category-' . $tag_fields[2];
                         break;
 
                     case 'page':
-                        $urls = Mage::helper('aoestatic/url')->_getUrlsForCmsPage($tag_fields[2]);
+                        $tags[] = 'page-' . $tag_fields[2];
+                        break;
+
+                    case 'block':
+                        $tags[] = 'block-' . $tag_fields[2];
                         break;
                 }
             }
         }
-        // transform urls to relative urls
-        $relativeUrls = array();
-        foreach ($urls as $url) {
-            $relativeUrls[] = parse_url($url, PHP_URL_PATH);
-        }
-        if (!empty($relativeUrls)) {
-            $errors = Mage::helper('aoestatic')->purge($relativeUrls);
+        if (!empty($tags)) {
+            $errors = Mage::helper('aoestatic')->purgeTags($tags);
             if (!empty($errors)) {
                 $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
             } else {
-                $count = count($relativeUrls);
+                $count = count($tags);
                 if ($count > 5) {
-                    $relativeUrls = array_slice($relativeUrls, 0, 5);
-                    $relativeUrls[] = '...';
-                    $relativeUrls[] = $helper->__("(Total number of purged urls: %d)", $count);
+                    $tags = array_slice($tags, 0, 5);
+                    $tags[] = '...';
+                    $tags[] = $helper->__("(Total number of purged urls: %d)", $count);
                 }
                 $session->addSuccess(
-                    $helper->__("Purges have been submitted successfully:<br/>") . implode("<br />", $relativeUrls)
+                    $helper->__("Purges have been submitted successfully:<br/>") . implode("<br />", $tags)
                 );
             }
         }

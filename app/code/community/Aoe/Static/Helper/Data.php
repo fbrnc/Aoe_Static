@@ -109,4 +109,16 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         }
         return $result;
     }
+
+    public function purgeTags($tags)
+    {
+        $result = array();
+        foreach ($tags as $tag) {
+            foreach ($this->_getAdapterInstances() as $adapter) {
+                /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
+                $result = array_merge($result, $adapter->purgeTags($tag));
+            }
+        }
+        return $result;
+    }
 }
