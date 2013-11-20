@@ -10,21 +10,19 @@
 class Aoe_Static_Model_Observer
 {
     /**
-     * @var Aoe_Static_Model_Config
-     */
-    protected $_config;
-
-    /**
-     * Local cache for calculated values of markers
-     * @var null | array
-     */
-    protected $markersValues = null;
-
-    /**
      * Indicates, if there are messages to show on the current page
      * @var bool
      */
     protected $messagesToShow = false;
+
+    /**
+     * Temporary storage for already processed entries
+     *
+     * @var array
+     */
+    public $_tags_already_processed = array();
+
+    const REGISTRY_SKIPPABLE_NAME = 'aoestatic_skippableProductsForPurging';
 
     /**
      * Constructor
@@ -64,12 +62,14 @@ class Aoe_Static_Model_Observer
             $customerName = Mage::helper('core')->escapeHtml($session->getCustomer()->getName());
         }
 
-        $this->markersValues = array(
+        /** @var Aoe_Static_Model_Cache_Marker $cacheMarker */
+        $cacheMarker = Mage::getSingleton('aoestatic/cache_marker');
+        $cacheMarker->addMarkerValues(array(
             '###FULLACTIONNAME###'      => $fullActionName,
             '###CUSTOMERNAME###'        => $customerName,
             '###ISLOGGEDIN###'          => $loggedIn,
             '###NUMBEROFITEMSINCART###' => Mage::helper('checkout/cart')->getSummaryCount(),
-        );
+        ));
 
         // apply default configuration in any case
         $defaultConf = $this->_config->getActionConfiguration('default');
@@ -89,31 +89,15 @@ class Aoe_Static_Model_Observer
             $this->applyConf($conf, $response);
         }
 
-        $this->_applyRegistryMaxAge($response);
-        $this->_applyCustomMaxAgeFromDb($controllerAction->getRequest(), $response);
+        if (!$this->messagesToShow) {
+            /** @var Aoe_Static_Model_Cache_Control $cacheControl */
+            $cacheControl = Mage::getSingleton('aoestatic/cache_control');
+            $cacheControl->addCustomUrlMaxAge($controllerAction->getRequest());
+            $cacheControl->collectTags();
+            $cacheControl->applyCacheHeaders();
+        }
 
         return $this;
-    }
-
-    /**
-     * Apply a custom registry-stored max-age header (e.g. for special products)
-     * returns true if a max-age header was set
-     *
-     * @param Mage_Core_Controller_Response_Http $response
-     * @return bool
-     */
-    protected function _applyRegistryMaxAge(Mage_Core_Controller_Response_Http $response)
-    {
-        if (!$maxAge = Mage::registry(Aoe_Static_Helper_Data::REGISTRY_MAX_AGE)) {
-            return false;
-        }
-        if (!$this->messagesToShow && ($maxAge > 0)) {
-            $response->setHeader('Cache-Control', 'max-age=' . (int) $maxAge, true);
-            $response->setHeader('X-Magento-Lifetime', (int) $maxAge, true);
-            $response->setHeader('aoestatic', 'cache', true);
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -124,12 +108,14 @@ class Aoe_Static_Model_Observer
      */
     protected function applyConf(Mage_Core_Model_Config_Element $conf, Mage_Core_Controller_Response_Http $response)
     {
+        /** @var Aoe_Static_Model_Cache_Marker $cacheMarker */
+        $cacheMarker = Mage::getSingleton('aoestatic/cache_marker');
         foreach ($conf->headers->children() as $key => $value) {
             // skip aoestatic header if we have messages to display
             if ($this->messagesToShow && ($key == 'aoestatic')) {
                 continue;
             }
-            $value = $this->replaceMarkers($value);
+            $value = $cacheMarker->replaceMarkers($value);
             $response->setHeader($key, $value, true);
         }
         if ($conf->cookies) {
@@ -140,7 +126,7 @@ class Aoe_Static_Model_Observer
                     continue;
                 }
                 $value    = (string) $cookieConf->value;
-                $value    = $this->replaceMarkers($value);
+                $value    = $cacheMarker->replaceMarkers($value);
                 $period   = $cookieConf->period ? (string) $cookieConf->period : null;
                 $path     = $cookieConf->path ? (string) $cookieConf->path : null;
                 $domain   = $cookieConf->domain ? (string) $cookieConf->domain : null;
@@ -148,35 +134,6 @@ class Aoe_Static_Model_Observer
                 $httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
 
                 $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
-            }
-        }
-    }
-
-    /**
-     * Apply custom Cache-Control: max-age from db
-     *
-     * @param Mage_Core_Controller_Request_Http $request
-     * @param Mage_Core_Controller_Response_Http $response
-     */
-    protected function _applyCustomMaxAgeFromDb(Mage_Core_Controller_Request_Http $request,
-                                                Mage_Core_Controller_Response_Http $response
-    ) {
-        if (!$this->messagesToShow) {
-            // apply custom max-age from db
-            $urls = array($request->getRequestString());
-            $alias = $request->getAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS);
-            if ($alias) {
-                $urls[] = $alias;
-            }
-            /** @var $customUrlModel Aoe_Static_Model_CustomUrl */
-            $customUrlModel = Mage::getModel('aoestatic/customUrl');
-            $customUrlModel->setStoreId(Mage::app()->getStore()->getId());
-            $customUrlModel->loadByRequestPath($urls);
-
-            if ($customUrlModel->getId() && $customUrlModel->getMaxAge()) {
-                $response->setHeader('Cache-Control', 'max-age=' . (int) $customUrlModel->getMaxAge(), true);
-                $response->setHeader('X-Magento-Lifetime', (int) $customUrlModel->getMaxAge(), true);
-                $response->setHeader('aoestatic', 'cache', true);
             }
         }
     }
@@ -191,82 +148,13 @@ class Aoe_Static_Model_Observer
         // check if we have messages to display
         $this->messagesToShow = $this->checkForMessages();
 
-        $event = $observer->getEvent();
-        /* @var $event Varien_Event */
-        $controllerAction = $event->getAction();
         /* @var $controllerAction Mage_Core_Controller_Varien_Action */
+        $controllerAction = $observer->getAction();
         $fullActionName = $controllerAction->getFullActionName();
 
-        $conf = $this->_config->getActionConfiguration($fullActionName);
+        $handle = $this->_config->getActionConfiguration($fullActionName) ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
 
-        $handle = $conf ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
-
-        $observer->getEvent()->getLayout()->getUpdate()->addHandle($handle);
-    }
-
-    /**
-     * Replaces markers in the $value, saves calculated value to the local cache
-     *
-     * @param string $value
-     * @return string
-     */
-    protected function replaceMarkers($value)
-    {
-        $matches = array();
-        preg_match_all('|###[^#]+###|', $value, $matches);
-        $markersWithoutValues = array_diff($matches[0], array_keys($this->markersValues));
-        foreach($markersWithoutValues as $marker) {
-            $this->markersValues[$marker] = $this->getMarkerValue($marker);
-        }
-        $value = str_replace(array_keys($this->markersValues), array_values($this->markersValues), $value);
-        return $value;
-    }
-
-    /**
-     * Returns value of a given marker
-     *
-     * @param string $marker
-     * @return string
-     */
-    protected function getMarkerValue($marker)
-    {
-        $markerValue = $marker;
-        if (isset($this->markersValues[$marker]) && $this->markersValues[$marker] !== NULL) {
-            $markerValue = $this->markersValues[$marker];
-        } elseif ($this->_config->getMarkerCallback($marker)) {
-            $markerValue = $this->executeCallback($this->_config->getMarkerCallback($marker));
-        }
-        return (string)$markerValue;
-    }
-
-    /**
-     * Executes method defined in the marker callback configuration and returns the result
-     *
-     * @param string $callbackString
-     * @return mixed
-     */
-    protected function executeCallback($callbackString)
-    {
-        $result = "";
-        try {
-            if ($callbackString) {
-                if (!preg_match(Mage_Cron_Model_Observer::REGEX_RUN_MODEL, (string)$callbackString, $run)) {
-                    Mage::throwException('Invalid model/method definition, expecting "model/class::method".');
-                }
-                if (!($model = Mage::getModel($run[1])) || !method_exists($model, $run[2])) {
-                    Mage::throwException('Invalid callback: %s::%s does not exist', $run[1], $run[2]);
-                }
-                $callback = array($model, $run[2]);
-                $arguments = array();
-            }
-            if (empty($callback)) {
-                Mage::throwException(Mage::helper('cron')->__('No callbacks found for marker'));
-            }
-            $result = call_user_func_array($callback, $arguments);
-        } catch (Exception $e) {
-            Mage::logException($e);
-        }
-        return $result;
+        $observer->getLayout()->getUpdate()->addHandle($handle);
     }
 
     /**
@@ -283,5 +171,168 @@ class Aoe_Static_Model_Observer
             $this->messagesToShow = true;
         }
         return $this->messagesToShow;
+    }
+
+    /**
+     * collect tags
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function coreBlockAbstractToHtmlBefore(Varien_Event_Observer $observer)
+    {
+        $block = $observer->getBlock();
+
+        if ($block instanceof Mage_Cms_Block_Block && $block->getBlock()) {
+            Mage::getSingleton('aoestatic/cache_control')->addTag('block-' . $block->getBlock()->getId());
+        } else if ($block instanceof Mage_Cms_Block_Page) {
+            Mage::getSingleton('aoestatic/cache_control')->addTag('page-' . ($block->getPageId() ?: ($block->getPage() ? $block->getPage()->getId() : Mage::getSingleton('cms/page')->getId())));
+        } else if (($block instanceof Mage_Catalog_Block_Product_Abstract) && $block->getProductCollection()) {
+            $tags = array();
+            foreach ($block->getProductCollection()->getAllIds() as $id) {
+                $tags[] = 'product-' . $id;
+            }
+            Mage::getSingleton('aoestatic/cache_control')->addTag($tags);
+        }
+    }
+
+    /**
+     * manual cache purging of specified URLs
+     *
+     * @param Varien_Event_Observer $event
+     */
+    public function controllerActionPredispatchAdminhtmlCacheIndex(Varien_Event_Observer $event)
+    {
+        /** @var Mage_Core_Controller_Request_Http $request */
+        $request = $event->getControllerAction()->getRequest();
+
+        if ($purgeUrls = $request->getParam('aoe_purge_urls')) {
+            $purgeUrls = array_map('trim', explode("\n", trim($purgeUrls)));
+
+            // purge directly without queueing
+            Mage::helper('aoestatic')->purge($purgeUrls, false);
+
+            Mage::getSingleton('adminhtml/session')->addSuccess("The Aoe_Static cache storage has been flushed.");
+
+            /** @var Mage_Core_Controller_Response_Http $response */
+            $response = $event->getControllerAction()->getResponse();
+            $response->setRedirect(Mage::getModel('adminhtml/url')->getUrl('*/cache/index', array()));
+            $response->sendResponse();
+            exit;
+        }
+    }
+
+    /**
+     * @see Mage_Core_Model_Cache
+     *
+     * @param Mage_Core_Model_Observer $observer
+     * @return Aoe_Static_Model_Observer
+     */
+    public function catalogCategorySaveCommitAfter($observer)
+    {
+        /** @var $category Mage_Catalog_Model_Category */
+        $category = $observer->getCategory();
+        if ($category->getData('include_in_menu')) {
+            // notify user that varnish needs to be refreshed
+            Mage::app()->getCacheInstance()->invalidateType(array('aoestatic'));
+        }
+        return $this;
+    }
+
+    /**
+     * Listens to application_clean_cache event and gets notified when a product/category/cms model is saved
+     *
+     * @todo tzags isntead of urls
+     * @param $observer Mage_Core_Model_Observer
+     * @return Aoe_Static_Model_Observer
+     */
+    public function applicationCleanCache($observer)
+    {
+        // if Varnish is not enabled on admin don't do anything
+        if (!Mage::app()->useCache('aoestatic')) {
+            return $this;
+        }
+
+        /** @var Aoe_Static_Helper_Data $helper */
+        $helper = Mage::helper('aoestatic');
+        /** @var Mage_Adminhtml_Model_Session $session */
+        $session = Mage::getSingleton('adminhtml/session');
+        $tags = $observer->getTags();
+
+        // check if we should process tags from product which has no relevant changes
+        $skippableProductIds = Mage::registry(self::REGISTRY_SKIPPABLE_NAME);
+        if (null !== $skippableProductIds) {
+            foreach ((array) $tags as $tag) {
+                if (preg_match('/^catalog_product_(\d+)?/', $tag, $match)) {
+                    if (isset($match[1]) && in_array($match[1], $skippableProductIds)) {
+                        return $this;
+                    }
+                }
+            }
+        }
+
+        $urls = array();
+        if ($tags == array()) {
+            $errors = Mage::helper('aoestatic')->purgeAll();
+            if (!empty($errors)) {
+                $session->addError($helper->__("Static Purge failed"));
+            } else {
+                $session->addSuccess($helper->__("The Static cache storage has been flushed."));
+            }
+
+            return $this;
+        }
+
+        // compute the urls for affected entities
+        foreach ((array)$tags as $tag) {
+            if (in_array($tag, $this->_tags_already_processed)) {
+                continue;
+            }
+
+            $this->_tags_already_processed[] = $tag;
+
+            //catalog_product_100 or catalog_category_186
+            $tag_fields = explode('_', $tag);
+            if (count($tag_fields) == 3) {
+                switch ($tag_fields[1]) {
+                    case 'product':
+                        // get urls for product
+                        $product = Mage::getModel('catalog/product')->load($tag_fields[2]);
+                        $urls = array_merge($urls, Mage::helper('aoestatic/url')->_getUrlsForProduct($product));
+                        break;
+
+                    case 'category':
+                        $category = Mage::getModel('catalog/category')->load($tag_fields[2]);
+                        $category_urls = Mage::helper('aoestatic/url')->_getUrlsForCategory($category);
+                        $urls = array_merge($urls, $category_urls);
+                        break;
+
+                    case 'page':
+                        $urls = Mage::helper('aoestatic/url')->_getUrlsForCmsPage($tag_fields[2]);
+                        break;
+                }
+            }
+        }
+        // transform urls to relative urls
+        $relativeUrls = array();
+        foreach ($urls as $url) {
+            $relativeUrls[] = parse_url($url, PHP_URL_PATH);
+        }
+        if (!empty($relativeUrls)) {
+            $errors = Mage::helper('aoestatic')->purge($relativeUrls);
+            if (!empty($errors)) {
+                $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
+            } else {
+                $count = count($relativeUrls);
+                if ($count > 5) {
+                    $relativeUrls = array_slice($relativeUrls, 0, 5);
+                    $relativeUrls[] = '...';
+                    $relativeUrls[] = $helper->__("(Total number of purged urls: %d)", $count);
+                }
+                $session->addSuccess(
+                    $helper->__("Purges have been submitted successfully:<br/>") . implode("<br />", $relativeUrls)
+                );
+            }
+        }
+        return $this;
     }
 }

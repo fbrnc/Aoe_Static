@@ -13,4 +13,23 @@
     <adminhtml_aoestatic_customurl_grid>
         <block type="aoestatic/adminhtml_customUrl_grid" name="root" />
     </adminhtml_aoestatic_customurl_grid>
+    <adminhtml_cache_index>
+        <reference name="content">
+            <block type="aoestatic/adminhtml_purge" name="aoestatic" template="aoestatic/purge.phtml" after="cache.additional"/>
+        </reference>
+    </adminhtml_cache_index>
+
+    <adminhtml_aoestatic_blacklisturlpattern_index>
+        <reference name="content">
+            <block type="aoestatic/adminhtml_blacklistUrlPattern" name="aoestatic.blacklist.url.pattern" />
+        </reference>
+    </adminhtml_aoestatic_blacklisturlpattern_index>
+    <adminhtml_aoestatic_blacklisturlpattern_edit>
+        <reference name="content">
+            <block type="aoestatic/adminhtml_blacklistUrlPattern_edit" name="aoestatic.blacklist.url.pattern.edit" />
+        </reference>
+    </adminhtml_aoestatic_blacklisturlpattern_edit>
+    <adminhtml_aoestatic_blacklisturlpattern_grid>
+        <block type="aoestatic/adminhtml_blacklistUrlPattern_grid" name="root" />
+    </adminhtml_aoestatic_blacklisturlpattern_grid>
 </layout>

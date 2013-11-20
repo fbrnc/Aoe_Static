@@ -4,7 +4,7 @@
         <Aoe_Static>
             <active>true</active>
             <codePool>local</codePool>
-            <version>0.0.5</version>
+            <version>0.0.6</version>
         </Aoe_Static>
     </modules>
 
@@ -25,6 +25,10 @@
                     <custom_url>
                         <table>aoestatic_custom_url</table>
                     </custom_url>
+
+                    <blacklist_url_pattern>
+                        <table>aoestatic_blacklist_url_pattern</table>
+                    </blacklist_url_pattern>
                 </entities>
             </aoestatic_resource>
         </models>
@@ -41,6 +45,45 @@
                 </setup>
             </aoestatic_setup>
         </resources>
+        <cache>
+            <types>
+                <aoestatic translate="label,description" module="aoestatic">
+                    <label>Aoe Static Cache</label>
+                    <description>AOE Static Cache</description>
+                    <tags/>
+                </aoestatic>
+            </types>
+        </cache>
+        <events>
+            <aoeasynccache_processqueue_postprocessjobcollection>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/asyncCacheObserver</class>
+                        <method>aoeasynccacheProcessqueuePostprocessjobcollection</method>
+                    </aoestatic>
+                </observers>
+            </aoeasynccache_processqueue_postprocessjobcollection>
+            <application_clean_cache>
+                <observers>
+                    <aoestatic>
+                        <type>singleton</type>
+                        <class>aoestatic/observer</class>
+                        <method>applicationCleanCache</method>
+                    </aoestatic>
+                </observers>
+            </application_clean_cache>
+            <!-- To check if category is in navigation to let admin users know that varnish cache needs
+            to be revalidated -->
+            <catalog_category_save_commit_after>
+                <observers>
+                    <aoestatic>
+                        <type>singleton</type>
+                        <class>aoestatic/observer</class>
+                        <method>catalogCategorySaveCommitAfter</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_save_commit_after>
+        </events>
     </global>
 
     <frontend>
@@ -56,7 +99,7 @@
                 <use>standard</use>
                 <args>
                     <module>Aoe_Static</module>
-                    <frontName>phone</frontName>
+                    <frontName>aoestatic</frontName>
                 </args>
             </aoestatic>
         </routers>
@@ -75,12 +118,22 @@
             <!-- Creating a new layout handle "aoestatic_cacheable" or "aoestatic_notcacheable"-->
             <controller_action_layout_load_before>
                 <observers>
-                    <aoestatic_cacheable>
+                    <aoestatic>
                         <class>aoestatic/observer</class>
                         <method>beforeLoadLayout</method>
-                    </aoestatic_cacheable>
+                    </aoestatic>
                 </observers>
             </controller_action_layout_load_before>
+
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <aoe_static>
+                        <type>singleton</type>
+                        <class>aoestatic/observer</class>
+                        <method>coreBlockAbstractToHtmlBefore</method>
+                    </aoe_static>
+                </observers>
+            </core_block_abstract_to_html_before>
         </events>
     </frontend>
 
@@ -104,5 +157,16 @@
                 </aoestatic>
             </updates>
         </layout>
+        <events>
+            <controller_action_predispatch_adminhtml_cache_index>
+                <observers>
+                    <aoestatic>
+                        <type>singleton</type>
+                        <class>aoestatic/observer</class>
+                        <method>controllerActionPredispatchAdminhtmlCacheIndex</method>
+                    </aoestatic>
+                </observers>
+            </controller_action_predispatch_adminhtml_cache_index>
+        </events>
     </adminhtml>
 </config>
