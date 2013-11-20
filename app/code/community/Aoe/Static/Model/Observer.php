@@ -136,6 +136,9 @@ class Aoe_Static_Model_Observer
                 $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
             }
         }
+        if ($conf->cache) {
+            Mage::getSingleton('aoestatic/cache_control')->addMaxAge($conf->cache->maxage);
+        }
     }
 
     /**

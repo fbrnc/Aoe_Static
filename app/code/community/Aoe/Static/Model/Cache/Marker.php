@@ -9,9 +9,9 @@ class Aoe_Static_Model_Cache_Marker
 
     /**
      * Local cache for calculated values of markers
-     * @var null | array
+     * @var array
      */
-    protected $_markersValues = null;
+    protected $_markersValues = array();
 
     /**
      * Constructor
@@ -40,11 +40,11 @@ class Aoe_Static_Model_Cache_Marker
     {
         $matches = array();
         preg_match_all('|###[^#]+###|', $value, $matches);
-        $markersWithoutValues = array_diff($matches[0], array_keys($this->markersValues));
+        $markersWithoutValues = array_diff($matches[0], array_keys($this->_markersValues));
         foreach($markersWithoutValues as $marker) {
-            $this->markersValues[$marker] = $this->getMarkerValue($marker);
+            $this->_markersValues[$marker] = $this->getMarkerValue($marker);
         }
-        $value = str_replace(array_keys($this->markersValues), array_values($this->markersValues), $value);
+        $value = str_replace(array_keys($this->_markersValues), array_values($this->_markersValues), $value);
         return $value;
     }
 
@@ -57,8 +57,8 @@ class Aoe_Static_Model_Cache_Marker
     public function getMarkerValue($marker)
     {
         $markerValue = $marker;
-        if (isset($this->markersValues[$marker]) && $this->markersValues[$marker] !== NULL) {
-            $markerValue = $this->markersValues[$marker];
+        if (isset($this->_markersValues[$marker]) && $this->_markersValues[$marker] !== NULL) {
+            $markerValue = $this->_markersValues[$marker];
         } elseif ($this->_config->getMarkerCallback($marker)) {
             $markerValue = $this->executeCallback($this->_config->getMarkerCallback($marker));
         }

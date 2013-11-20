@@ -79,11 +79,16 @@
 		<!-- Configuration for full action names... -->
 		<cms_index_index>
 			<disabled>0</disabled>
+            <cache>
+                <maxage>86400</maxage>
+            </cache>
+            <!--
 			<headers>
 				<X-Magento-Lifetime>86400</X-Magento-Lifetime>
 				<Cache-Control>max-age=86400</Cache-Control>
 				<aoestatic>cache</aoestatic>
 			</headers>
+			-->
 		</cms_index_index>
 
 		<cms_page_view>

@@ -2,8 +2,6 @@
 <config>
     <modules>
         <Aoe_Static>
-            <active>true</active>
-            <codePool>local</codePool>
             <version>0.0.6</version>
         </Aoe_Static>
     </modules>

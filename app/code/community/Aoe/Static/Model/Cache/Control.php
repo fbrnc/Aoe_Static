@@ -101,7 +101,7 @@ class Aoe_Static_Model_Cache_Control
     {
         if ($this->_enabled) {
             $response = Mage::app()->getResponse();
-            $response->setHeader('X-Invalidated-By', '|' . implode('|', $this->_tags) . '|');
+            $response->setHeader('X-Invalidated-By', '|' . implode('|', array_keys($this->_tags)) . '|');
             $response->setHeader('Cache-Control', 'max-age=' . (int) $this->_maxAge, true);
             $response->setHeader('X-Magento-Lifetime', (int) $this->_maxAge, true);
             $response->setHeader('aoestatic', 'cache', true);
