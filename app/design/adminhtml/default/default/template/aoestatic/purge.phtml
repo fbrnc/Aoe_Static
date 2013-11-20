@@ -1,0 +1,28 @@
+<?php
+/* @var $this Aoe_Static_Block_Adminhtml_Purge */
+?>
+<br/>
+<div class="content-header">
+    <table cellspacing="0">
+        <tr>
+            <td><h3><?php echo Mage::helper('adminhtml')->__('Purge Urls from AOE Static Cache') ?></h3></td>
+        </tr>
+    </table>
+</div>
+<form action="<?php echo $this->getUrl('*/*/*') ?>" method="post">
+    <table class="form-list">
+        <tbody>
+            <tr>
+                <td>
+                    <textarea rows="2" cols="100" name="aoe_purge_urls"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" name="form_key" value="<?php echo $this->getFormKey(); ?>" />
+                    <button type="submit"><?php echo $this->__('Purge Urls') ?></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
