@@ -82,10 +82,10 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @todo names/consts
      * @param array $urls
-     * @param bool $async
+     * @param bool $queue
      * @return array
      */
-    public function purge(array $urls, $async = true)
+    public function purge(array $urls, $queue = true)
     {
         $urls = array_filter($urls, function ($e) { return strlen($e) ? true : false; });
         $result = array();
@@ -93,12 +93,12 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             /** @var Aoe_Static_Model_Adapter_Interface $adapter */
 
             // queue if async cache is enabled in config and not forced to purge directly
-            if ($this->getConfig()->useAsyncCache() && $async) {
+            if ($this->getConfig()->useAsyncCache() && $queue) {
                 foreach ($urls as $url) {
                     /** @var $asyncCache Aoe_AsyncCache_Model_Asynccache */
                     $asyncCache = Mage::getModel('aoeasynccache/asynccache');
                     $asyncCache->setTstamp(time())
-                        ->setMode(Aoe_VarnishAsyncCache_Helper_Data::MODE_PURGEVARNISHURL)
+                        ->setMode(Aoe_Static_Helper_Data::MODE_PURGEVARNISHURL)
                         ->setTags($url)
                         ->setStatus(Aoe_AsyncCache_Model_Asynccache::STATUS_PENDING)
                         ->save();

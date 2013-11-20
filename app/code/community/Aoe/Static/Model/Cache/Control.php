@@ -2,22 +2,38 @@
 
 class Aoe_Static_Model_Cache_Control
 {
+    /** @var array Tags for tag-based purging */
     protected $_tags = array();
+
+    /** @var int minimum maxage */
     protected $_maxAge = 0;
+
+    /** @var bool switch to disable sending out of cache headers */
     protected $_enabled = true;
 
+    /**
+     * @return $this
+     */
     public function enable()
     {
         $this->_enabled = true;
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function disable()
     {
         $this->_enabled = false;
         return $this;
     }
 
+    /**
+     * computes minimum max-age
+     *
+     * @param int|array $maxAge
+     */
     public function addMaxAge($maxAge)
     {
         if (!is_array($maxAge)) {
@@ -31,6 +47,11 @@ class Aoe_Static_Model_Cache_Control
         }
     }
 
+    /**
+     * loads specific max-age from database
+     *
+     * @param $request Mage_Core_Controller_Request_Http
+     */
     public function addCustomUrlMaxAge($request)
     {
         // apply custom max-age from db
@@ -49,6 +70,12 @@ class Aoe_Static_Model_Cache_Control
         }
     }
 
+    /**
+     * adds tag(s) to currect cache
+     *
+     * @param $tags array|string
+     * @return $this
+     */
     public function addTag($tags)
     {
         if (!is_array($tags)) {
@@ -61,8 +88,15 @@ class Aoe_Static_Model_Cache_Control
             }
             $this->_tags[$tag]++;
         }
+
+        return $this;
     }
 
+    /**
+     * applies cache-headers if enabled is true (default)
+     *
+     * @return $this
+     */
     public function applyCacheHeaders()
     {
         if ($this->_enabled) {
@@ -72,6 +106,8 @@ class Aoe_Static_Model_Cache_Control
             $response->setHeader('X-Magento-Lifetime', (int) $this->_maxAge, true);
             $response->setHeader('aoestatic', 'cache', true);
         }
+
+        return $this;
     }
 
     /**
@@ -88,6 +124,11 @@ class Aoe_Static_Model_Cache_Control
         return Mage::getSingleton('catalog/layer');
     }
 
+    /**
+     * collect various possible tags from current products and category/layer pages
+     *
+     * @return $this
+     */
     public function collectTags()
     {
         if (Mage::registry('product')) {
@@ -107,5 +148,6 @@ class Aoe_Static_Model_Cache_Control
             $currentCategory = Mage::registry('current_category');
             $this->addTag('category-' . $currentCategory->getId());
         }
+        return $this;
     }
 }
