@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<config>
+    <api>
+        <resources>
+            <aoestatic translate="title" module="aoestatic">
+                <model>aoestatic/api</model>
+                <title>Aoe Static API</title>
+                <acl>aoestatic/aoestatic</acl>
+                <methods>
+                    <purge translate="title" module="aoestatic">
+                        <title>Purge URLs</title>
+                        <acl>aoestatic/aoestatic/purge</acl>
+                    </purge>
+                    <purgeTags translate="title" module="aoestatic">
+                        <title>Purge Tags</title>
+                        <acl>aoestatic/aoestatic/purgeTags</acl>
+                    </purgeTags>
+                    <purgeAll translate="title" module="aoestatic">
+                        <title>Purge All</title>
+                        <acl>aoestatic/aoestatic/purgeAll</acl>
+                    </purgeAll>
+                </methods>
+            </aoestatic>
+        </resources>
+        <acl>
+            <resources>
+                <aoestatic translate="title" module="aoestatic">
+                    <title>Aoe Static API</title>
+                    <purge translate="title" module="aoestatic">
+                        <title>Purge URLs</title>
+                    </purge>
+                    <purgeTags translate="title" module="aoestatic">
+                        <title>Purge Tags</title>
+                    </purgeTags>
+                    <purgeAll translate="title" module="aoestatic">
+                        <title>Purge All</title>
+                    </purgeAll>
+                </aoestatic>
+            </resources>
+        </acl>
+    </api>
+</config>
