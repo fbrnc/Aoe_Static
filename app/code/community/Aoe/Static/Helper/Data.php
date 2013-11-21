@@ -97,7 +97,7 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             return array();
         }
 
-        $urls = array_filter($urls, function ($e) { return strlen($e) ? true : false; });
+        $urls = array_filter($urls);
         $result = array();
         foreach ($this->_getAdapterInstances() as $adapter) {
             /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */

@@ -20,7 +20,7 @@ class Aoe_Static_Model_Observer
      *
      * @var array
      */
-    public $_tags_already_processed = array();
+    public $_processedTags = array();
 
     const REGISTRY_SKIPPABLE_NAME = 'aoestatic_skippableProductsForPurging';
 
@@ -310,23 +310,8 @@ class Aoe_Static_Model_Observer
             //catalog_product_100 or catalog_category_186
             $tag_fields = explode('_', $tag);
             if (count($tag_fields) == 3) {
-                switch ($tag_fields[1]) {
-                    case 'product':
-                        // get urls for product
-                        $purgetags[] = 'product-' . $tag_fields[2];
-                        break;
-
-                    case 'category':
-                        $purgetags[] = 'category-' . $tag_fields[2];
-                        break;
-
-                    case 'page':
-                        $purgetags[] = 'page-' . $tag_fields[2];
-                        break;
-
-                    case 'block':
-                        $purgetags[] = 'block-' . $tag_fields[2];
-                        break;
+                if (in_array($tag_fields[1], array('product', 'category', 'page', 'block'))) {
+                    $purgetags[] = $tag_fields[1] . '-' . $tag_fields[2];
                 }
             }
         }

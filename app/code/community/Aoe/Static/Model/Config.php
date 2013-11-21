@@ -40,6 +40,7 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
      * load cache configuration
      *
      * @param string $sourceData
+     * @SuppressWarnings
      */
     public function __construct($sourceData = null)
     {
