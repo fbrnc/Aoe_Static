@@ -11,6 +11,9 @@ class Aoe_Static_Model_Cache_Control
     /** @var bool switch to disable sending out of cache headers */
     protected $_enabled = true;
 
+    /** @var string */
+    const DELIMITER = '/';
+
     /**
      * @return $this
      */
@@ -101,7 +104,7 @@ class Aoe_Static_Model_Cache_Control
     {
         if ($this->_enabled) {
             $response = Mage::app()->getResponse();
-            $response->setHeader('X-Invalidated-By', '|' . implode('|', array_keys($this->_tags)) . '|');
+            $response->setHeader('X-Invalidated-By', self::DELIMITER . implode(self::DELIMITER, array_keys($this->_tags)) . self::DELIMITER);
             $response->setHeader('Cache-Control', 'max-age=' . (int) $this->_maxAge, true);
             $response->setHeader('X-Magento-Lifetime', (int) $this->_maxAge, true);
             $response->setHeader('aoestatic', 'cache', true);

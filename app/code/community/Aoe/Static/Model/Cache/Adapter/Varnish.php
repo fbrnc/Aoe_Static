@@ -1,6 +1,6 @@
 <?php
 
-class Aoe_PurgeStatic_Model_Adapter_Varnish
+class Aoe_Static_Model_Cache_Adapter_Varnish
     implements Aoe_Static_Model_Cache_Adapter_Interface
 {
     /** @var array  */
@@ -32,7 +32,7 @@ class Aoe_PurgeStatic_Model_Adapter_Varnish
 
         foreach ($this->_varnishServers as $varnishServer) {
             foreach ($urls as $url) {
-                $varnishUrl = "http://" . $varnishServer . $url;
+                $varnishUrl = "http://" . $varnishServer . '/' . $url;
 
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $varnishUrl);
@@ -85,7 +85,7 @@ class Aoe_PurgeStatic_Model_Adapter_Varnish
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-Invalidates: |' . $tag . '|'));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-Invalidates: ' . Aoe_Static_Model_Cache_Control::DELIMITER . $tag . Aoe_Static_Model_Cache_Control::DELIMITER));
 
                 curl_multi_add_handle($mh, $ch);
                 $curlHandlers[] = $ch;
@@ -110,6 +110,8 @@ class Aoe_PurgeStatic_Model_Adapter_Varnish
             curl_close($ch);
         }
         curl_multi_close($mh);
+
+        return $errors;
     }
 
     /**

@@ -56,7 +56,7 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $result = array();
         foreach ($this->_getAdapterInstances() as $adapter) {
-            /** @var Aoe_Static_Model_Adapter_Interface $adapter */
+            /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
             $result = array_merge($result, $adapter->purgeAll());
         }
         return $result;
@@ -90,7 +90,7 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         $urls = array_filter($urls, function ($e) { return strlen($e) ? true : false; });
         $result = array();
         foreach ($this->_getAdapterInstances() as $adapter) {
-            /** @var Aoe_Static_Model_Adapter_Interface $adapter */
+            /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
 
             // queue if async cache is enabled in config and not forced to purge directly
             if ($this->getConfig()->useAsyncCache() && $queue) {
@@ -110,14 +110,22 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         return $result;
     }
 
+    /**
+     * purge given tag(s)
+     *
+     * @param string|array $tags
+     * @return array
+     */
     public function purgeTags($tags)
     {
+        if (!is_array($tags)) {
+            $tags = array($tags);
+        }
+
         $result = array();
-        foreach ($tags as $tag) {
-            foreach ($this->_getAdapterInstances() as $adapter) {
-                /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
-                $result = array_merge($result, $adapter->purgeTags($tag));
-            }
+        foreach ($this->_getAdapterInstances() as $adapter) {
+            /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
+            $result = array_merge($result, $adapter->purgeTags($tags));
         }
         return $result;
     }

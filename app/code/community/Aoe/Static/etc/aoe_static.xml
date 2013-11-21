@@ -105,4 +105,18 @@
 		</catalog_category_view>
 
 	</aoe_static>
+
+    <aoe_static_purging>
+        <adapters>
+            <varnish>
+                <model>aoestatic/cache_adapter_varnish</model>
+                <config>
+                    <urls>
+                        127.0.0.1:6081
+                    </urls>
+                </config>
+            </varnish>
+        </adapters>
+        <use_aoe_asynccache>0</use_aoe_asynccache>
+    </aoe_static_purging>
 </config>

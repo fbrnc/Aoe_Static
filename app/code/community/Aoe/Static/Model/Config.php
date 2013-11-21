@@ -104,4 +104,27 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
         }
         return $callback;
     }
+
+    /**
+     * fetch configured adapters
+     *
+     * @return array
+     */
+    public function getAdapters()
+    {
+        $adapters = $this->getNode('aoe_static_purging/adapters');
+        if (!$adapters) {
+            return array();
+        }
+
+        return $adapters->asArray();
+    }
+
+    /**
+     * @return bool
+     */
+    public function useAsyncCache()
+    {
+        return (boolean) $this->getNode('aoe_static_purging/use_aoe_asynccache');
+    }
 }

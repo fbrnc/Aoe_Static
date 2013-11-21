@@ -6,23 +6,31 @@
     <table cellspacing="0">
         <tr>
             <td><h3><?php echo Mage::helper('adminhtml')->__('Purge Urls from AOE Static Cache') ?></h3></td>
+            <td><h3><?php echo Mage::helper('adminhtml')->__('Purge Tags from AOE Static Cache') ?></h3></td>
         </tr>
     </table>
 </div>
-<form action="<?php echo $this->getUrl('*/*/*') ?>" method="post">
-    <table class="form-list">
-        <tbody>
-            <tr>
-                <td>
-                    <textarea rows="2" cols="100" name="aoe_purge_urls"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td>
+
+<table class="form-list" style="width: 98%">
+    <tbody>
+        <tr>
+            <td>
+                <form action="<?php echo $this->getUrl('*/*/*') ?>" method="post">
+                    <textarea rows="3" cols="100" name="aoe_purge_urls"></textarea>
                     <input type="hidden" name="form_key" value="<?php echo $this->getFormKey(); ?>" />
+                    <br/>
                     <button type="submit"><?php echo $this->__('Purge Urls') ?></button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</form>
+                </form>
+            </td>
+            <td>
+                <form action="<?php echo $this->getUrl('*/*/*') ?>" method="post">
+                    <textarea rows="3" cols="100" name="aoe_purge_tags"></textarea>
+                    <input type="hidden" name="form_key" value="<?php echo $this->getFormKey(); ?>" />
+                    <br/>
+                    <button type="submit"><?php echo $this->__('Purge Tags') ?></button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+x

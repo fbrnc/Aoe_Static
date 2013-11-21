@@ -110,15 +110,17 @@ class Aoe_Static_Model_Observer
     {
         /** @var Aoe_Static_Model_Cache_Marker $cacheMarker */
         $cacheMarker = Mage::getSingleton('aoestatic/cache_marker');
-        foreach ($conf->headers->children() as $key => $value) {
-            // skip aoestatic header if we have messages to display
-            if ($this->messagesToShow && ($key == 'aoestatic')) {
-                continue;
+        if (property_exists($conf, 'headers')) {
+            foreach ($conf->headers->children() as $key => $value) {
+                // skip aoestatic header if we have messages to display
+                if ($this->messagesToShow && ($key == 'aoestatic')) {
+                    continue;
+                }
+                $value = $cacheMarker->replaceMarkers($value);
+                $response->setHeader($key, $value, true);
             }
-            $value = $cacheMarker->replaceMarkers($value);
-            $response->setHeader($key, $value, true);
         }
-        if ($conf->cookies) {
+        if (property_exists($conf, 'cookies') && $conf->cookies) {
             $cookie = Mage::getModel('core/cookie');
             /* @var $cookie Mage_Core_Model_Cookie */
             foreach ($conf->cookies->children() as $name => $cookieConf) {
@@ -136,7 +138,7 @@ class Aoe_Static_Model_Observer
                 $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
             }
         }
-        if ($conf->cache) {
+        if (property_exists($conf, 'cache') && $conf->cache) {
             Mage::getSingleton('aoestatic/cache_control')->addMaxAge($conf->cache->maxage);
         }
     }
@@ -211,10 +213,23 @@ class Aoe_Static_Model_Observer
         if ($purgeUrls = $request->getParam('aoe_purge_urls')) {
             $purgeUrls = array_map('trim', explode("\n", trim($purgeUrls)));
 
-            // purge directly without queueing
-            Mage::helper('aoestatic')->purge($purgeUrls, false);
+            foreach (Mage::helper('aoestatic')->purge($purgeUrls, false) as $message) {
+                Mage::getSingleton('adminhtml/session')->addNotice($message);
+            }
 
-            Mage::getSingleton('adminhtml/session')->addSuccess("The Aoe_Static cache storage has been flushed.");
+            /** @var Mage_Core_Controller_Response_Http $response */
+            $response = $event->getControllerAction()->getResponse();
+            $response->setRedirect(Mage::getModel('adminhtml/url')->getUrl('*/cache/index', array()));
+            $response->sendResponse();
+            exit;
+        }
+
+        if ($purgeTags = $request->getParam('aoe_purge_tags')) {
+            $purgeTags = array_map('trim', explode("\n", trim($purgeTags)));
+
+            foreach (Mage::helper('aoestatic')->purgeTags($purgeTags, false) as $message) {
+                Mage::getSingleton('adminhtml/session')->addNotice($message);
+            }
 
             /** @var Mage_Core_Controller_Response_Http $response */
             $response = $event->getControllerAction()->getResponse();
@@ -272,7 +287,7 @@ class Aoe_Static_Model_Observer
             }
         }
 
-        $tags = array();
+        $purgetags = array();
         if ($tags == array()) {
             $errors = Mage::helper('aoestatic')->purgeAll();
             if (!empty($errors)) {
@@ -298,36 +313,36 @@ class Aoe_Static_Model_Observer
                 switch ($tag_fields[1]) {
                     case 'product':
                         // get urls for product
-                        $tags[] = 'product-' . $tag_fields[2];
+                        $purgetags[] = 'product-' . $tag_fields[2];
                         break;
 
                     case 'category':
-                        $tags[] = 'category-' . $tag_fields[2];
+                        $purgetags[] = 'category-' . $tag_fields[2];
                         break;
 
                     case 'page':
-                        $tags[] = 'page-' . $tag_fields[2];
+                        $purgetags[] = 'page-' . $tag_fields[2];
                         break;
 
                     case 'block':
-                        $tags[] = 'block-' . $tag_fields[2];
+                        $purgetags[] = 'block-' . $tag_fields[2];
                         break;
                 }
             }
         }
-        if (!empty($tags)) {
-            $errors = Mage::helper('aoestatic')->purgeTags($tags);
+        if (!empty($purgetags)) {
+            $errors = Mage::helper('aoestatic')->purgeTags($purgetags);
             if (!empty($errors)) {
                 $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
             } else {
-                $count = count($tags);
+                $count = count($purgetags);
                 if ($count > 5) {
-                    $tags = array_slice($tags, 0, 5);
-                    $tags[] = '...';
-                    $tags[] = $helper->__("(Total number of purged urls: %d)", $count);
+                    $purgetags = array_slice($purgetags, 0, 5);
+                    $purgetags[] = '...';
+                    $purgetags[] = $helper->__("(Total number of purged urls: %d)", $count);
                 }
                 $session->addSuccess(
-                    $helper->__("Purges have been submitted successfully:<br/>") . implode("<br />", $tags)
+                    $helper->__("Tag purges have been submitted successfully:<br/>") . implode("<br />", $purgetags)
                 );
             }
         }
