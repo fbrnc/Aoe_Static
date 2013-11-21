@@ -54,6 +54,11 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function purgeAll()
     {
+        // if Varnish is not enabled on admin don't do anything
+        if (!Mage::app()->useCache('aoestatic')) {
+            return array();
+        }
+
         $result = array();
         foreach ($this->_getAdapterInstances() as $adapter) {
             /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
@@ -87,6 +92,11 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function purge(array $urls, $queue = true)
     {
+        // if Varnish is not enabled on admin don't do anything
+        if (!Mage::app()->useCache('aoestatic')) {
+            return array();
+        }
+
         $urls = array_filter($urls, function ($e) { return strlen($e) ? true : false; });
         $result = array();
         foreach ($this->_getAdapterInstances() as $adapter) {
@@ -118,6 +128,11 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function purgeTags($tags)
     {
+        // if Varnish is not enabled on admin don't do anything
+        if (!Mage::app()->useCache('aoestatic')) {
+            return array();
+        }
+
         if (!is_array($tags)) {
             $tags = array($tags);
         }

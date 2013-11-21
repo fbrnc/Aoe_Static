@@ -13,7 +13,7 @@ class Aoe_Static_Model_Cache_Adapter_Varnish
      */
     public function purgeAll()
     {
-        return $this->purge(array('/.*'));
+        return $this->purge(array('.*'));
     }
 
     /**
