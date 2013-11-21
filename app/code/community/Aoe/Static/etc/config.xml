@@ -165,6 +165,15 @@
                     </aoestatic>
                 </observers>
             </controller_action_predispatch_adminhtml_cache_index>
+            <controller_action_predispatch_adminhtml_cache_massRefresh>
+                <observers>
+                    <aoe_static>
+                        <type>singleton</type>
+                        <class>aoestatic/observer</class>
+                        <method>controllerActionPredispatchAdminhtmlCacheMassRefresh</method>
+                    </aoe_static>
+                </observers>
+            </controller_action_predispatch_adminhtml_cache_massRefresh>
         </events>
     </adminhtml>
 </config>

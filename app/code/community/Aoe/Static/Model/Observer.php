@@ -348,4 +348,16 @@ class Aoe_Static_Model_Observer
         }
         return $this;
     }
+
+    public function controllerActionPredispatchAdminhtmlCacheMassRefresh(Varien_Event_Observer $observer)
+    {
+        /** @var Mage_Core_Controller_Request_Http $request */
+        $request = $observer->getRequest();
+
+        if (strpos($request->getParam('types'), 'aoestatic') !== false) {
+            foreach (Mage::helper('aoestatic')->purgeAll() as $message) {
+                Mage::getSingleton('adminhtml/session')->addNotice($message);
+            }
+        }
+    }
 }
