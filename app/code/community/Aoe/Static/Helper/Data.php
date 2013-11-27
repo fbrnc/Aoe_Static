@@ -30,7 +30,6 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      */
     protected function _getAdapterInstances()
     {
-
         if (is_null($this->_adapterInstances)) {
 
             $this->_adapterInstances = array();

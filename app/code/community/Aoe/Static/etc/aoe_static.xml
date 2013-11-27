@@ -109,7 +109,7 @@
                 </config>
             </varnish>
             <blackhole>
-                <model>aoestatic/cache_adapter_blockhole</model>
+                <model>aoestatic/cache_adapter_blackhole</model>
                 <config>
                 </config>
             </blackhole>
