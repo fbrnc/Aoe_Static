@@ -301,11 +301,11 @@ class Aoe_Static_Model_Observer
 
         // compute the urls for affected entities
         foreach ((array)$tags as $tag) {
-            if (in_array($tag, $this->_tags_already_processed)) {
+            if (in_array($tag, $this->_processedTags)) {
                 continue;
             }
 
-            $this->_tags_already_processed[] = $tag;
+            $this->_processedTags[] = $tag;
 
             //catalog_product_100 or catalog_category_186
             $tag_fields = explode('_', $tag);
