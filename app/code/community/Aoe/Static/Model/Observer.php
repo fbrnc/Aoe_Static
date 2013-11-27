@@ -2,10 +2,7 @@
 /**
  * Observer model
  *
- * @category    Aoe
- * @package     Aoe_Static
- * @author      Fabrizio Branca <mail@fabrizio-branca.de>
- * @author      Toni Grigoriu <toni@tonigrigoriu.com>
+ * @author Fabrizio Branca
  */
 class Aoe_Static_Model_Observer
 {
