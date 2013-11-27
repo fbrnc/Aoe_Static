@@ -1,10 +1,20 @@
 <?php
 
-class Aoe_Static_Model_Cache_Adapter_Varnish
-    implements Aoe_Static_Model_Cache_Adapter_Interface
+/**
+ * Class Aoe_Static_Model_Cache_Adapter_Varnish
+ */
+class Aoe_Static_Model_Cache_Adapter_Varnish implements Aoe_Static_Model_Cache_Adapter_Interface
 {
     /** @var array  */
     protected $_varnishServers = array();
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->_varnishServers = Mage::helper('aoe_static')->trimExplode("\n", Mage::getStoreConfig('dev/aoestatic/servers'), true);
+    }
 
     /**
      * Purges all cache on all Varnish servers.
@@ -115,12 +125,12 @@ class Aoe_Static_Model_Cache_Adapter_Varnish
     }
 
     /**
-     * set's varnish server urls
+     * sets varnish server urls
      *
      * @param string|array $config
      */
     public function setConfig($config)
     {
-        $this->_varnishServers = array_map('trim', explode("\n", trim($config['urls'])));
+        // This adapter reads its configuration from core_config_data instead
     }
 }

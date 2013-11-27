@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <dev>
+            <groups>
+                <aoestatic>
+                    <label>AOE Static</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <purgeadapter translate="label">
+                            <label>Purge adapter</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>aoestatic/adminhtml_system_config_source_purgeAdapters</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </purgeadapter>
+                        <servers translate="label">
+                            <label>Cache Servers</label>
+                            <comment><![CDATA[Generic configuration for your cache servers (e.g. Varnish) that's used in the purging adapter. Format: <ip>:<port>. Separate multiple servers with new lines.]]></comment>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </servers>
+                        <use_aoe_asynccache translate="label">
+                            <label>Use Aoe_AsyncCache</label>
+                            <comment><![CDATA[Make sure you have Aoe_AsyncCache installed!]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_aoe_asynccache>
+                    </fields>
+                </aoestatic>
+            </groups>
+        </dev>
+    </sections>
+</config>

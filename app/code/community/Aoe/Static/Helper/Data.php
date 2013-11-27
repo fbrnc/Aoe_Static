@@ -13,7 +13,7 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
     protected $_config = null;
 
     /** @var array */
-    protected $_adapterInstances = array();
+    protected $_adapterInstances;
 
     /**
      * @return Aoe_Static_Model_Config
@@ -33,10 +33,26 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      */
     protected function _getAdapterInstances()
     {
-        foreach ($this->getConfig()->getAdapters() as $key => $adapter) {
-            if (!isset($this->_adapterInstances[$key])) {
+
+        if (is_null($this->_adapterInstances)) {
+
+            $this->_adapterInstances = array();
+
+            $selectedAdapterKeys = Mage::getStoreConfig('dev/aoestatic/purgeadapter');
+
+            foreach ($this->trimExplode(',', $selectedAdapterKeys) as $key) {
+                $adapters = $this->getConfig()->getAdapters();
+                if (!isset($adapters[$key])) {
+                    Mage::throwException('Could not find adapter configuration for adapter "'.$key.'"');
+                }
+
+                $adapter = $adapters[$key];
                 $adapterInstance = Mage::getSingleton($adapter['model']);
+                if (!$adapterInstance instanceof Aoe_Static_Model_Cache_Adapter_Interface) {
+                    Mage::throwException('Adapter "'.$key.'" does not implement Aoe_Static_Model_Cache_Adapter_Interface');
+                }
                 $adapterInstance->setConfig($adapter['config']);
+
                 $this->_adapterInstances[$key] = $adapterInstance;
             }
         }
@@ -123,6 +139,30 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($this->_getAdapterInstances() as $adapter) {
             /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
             $result = array_merge($result, $adapter->purgeTags($tags));
+        }
+        return $result;
+    }
+
+    /**
+     * trim explode
+     *
+     * @param $delim
+     * @param $string
+     * @param bool $removeEmptyValues
+     * @return array
+     */
+    public function trimExplode($delim, $string, $removeEmptyValues = false)
+    {
+        $explodedValues = explode($delim, $string);
+        $result = array_map('trim', $explodedValues);
+        if ($removeEmptyValues) {
+            $temp = array();
+            foreach ($result as $value) {
+                if ($value !== '') {
+                    $temp[] = $value;
+                }
+            }
+            $result = $temp;
         }
         return $result;
     }

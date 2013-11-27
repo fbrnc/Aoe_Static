@@ -102,16 +102,18 @@
     </aoe_static>
 
     <aoe_static_purging>
-        <adapters>
+        <adapters><!-- Register additional adapters here -->
             <varnish>
                 <model>aoestatic/cache_adapter_varnish</model>
                 <config>
-                    <urls>
-                        127.0.0.1:83
-                    </urls>
                 </config>
             </varnish>
+            <blackhole>
+                <model>aoestatic/cache_adapter_blockhole</model>
+                <config>
+                </config>
+            </blackhole>
         </adapters>
-        <use_aoe_asynccache>0</use_aoe_asynccache>
     </aoe_static_purging>
+
 </config>

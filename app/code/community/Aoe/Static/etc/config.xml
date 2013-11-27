@@ -172,4 +172,13 @@
             </controller_action_predispatch_adminhtml_cache_massRefresh>
         </events>
     </adminhtml>
+
+    <default>
+        <dev>
+            <aoestatic>
+                <servers><![CDATA[127.0.0.1:83]]></servers>
+            </aoestatic>
+        </dev>
+    </default>
+
 </config>
