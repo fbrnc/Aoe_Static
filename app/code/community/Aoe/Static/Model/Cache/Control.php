@@ -137,9 +137,9 @@ class Aoe_Static_Model_Cache_Control
         if (Mage::registry('product')) {
             $this->addTag('product-' . Mage::registry('product')->getId());
         }
-        if (($layer = $this->_getLayer()) && ($layer->getProductCollection())) {
+        if (($layer = $this->_getLayer()) && ($layer->getCurrentCategory()->getId() != $layer->getCurrentStore()->getRootCategoryId()) && ($layer->apply()->getProductCollection())) {
             /** @var Mage_Catalog_Model_Layer $layer */
-            $ids = $layer->getProductCollection()->getAllIds();
+            $ids = $layer->getProductCollection()->getLoadedIds();
             $tags = array();
             foreach ($ids as $id) {
                 $tags[] = 'product-' . $id;

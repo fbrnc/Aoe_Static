@@ -193,7 +193,7 @@ class Aoe_Static_Model_Observer
             Mage::getSingleton('aoestatic/cache_control')->addTag('page-' . ($block->getPageId() ?: ($block->getPage() ? $block->getPage()->getId() : Mage::getSingleton('cms/page')->getId())));
         } else if (($block instanceof Mage_Catalog_Block_Product_Abstract) && $block->getProductCollection()) {
             $tags = array();
-            foreach ($block->getProductCollection()->getAllIds() as $id) {
+            foreach ($block->getProductCollection()->getLoadedIds() as $id) {
                 $tags[] = 'product-' . $id;
             }
             Mage::getSingleton('aoestatic/cache_control')->addTag($tags);
