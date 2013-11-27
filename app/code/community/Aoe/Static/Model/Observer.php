@@ -335,8 +335,9 @@ class Aoe_Static_Model_Observer
     {
         /** @var Mage_Core_Controller_Request_Http $request */
         $request = $observer->getControllerAction()->getRequest();
+        $types = $request->getParam('types');
 
-        if (in_array('aoestatic', $request->getParam('types'))) {
+        if (is_array($types) && in_array('aoestatic', $types)) {
             foreach (Mage::helper('aoestatic')->purgeAll() as $message) {
                 Mage::getSingleton('adminhtml/session')->addNotice($message);
             }
