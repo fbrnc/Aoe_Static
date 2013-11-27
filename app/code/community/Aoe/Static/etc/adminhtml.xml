@@ -8,12 +8,6 @@
                     <action>adminhtml/aoestatic_customUrl</action>
                     <sort_order>10</sort_order>
                 </aoestatic_customUrl>
-
-                <aoestatic_blacklistUrlPattern translate="title" module="aoestatic">
-                    <title>Aoe Static Cache Url Blacklist</title>
-                    <action>adminhtml/aoestatic_blacklistUrlPattern</action>
-                    <sort_order>11</sort_order>
-                </aoestatic_blacklistUrlPattern>
             </children>
          </system>
     </menu>
@@ -37,21 +31,6 @@
                                     </delete>
                                 </children>
                             </aoestatic_customUrl>
-
-                            <aoestatic_blacklistUrlPattern translate="title">
-                                <title>Manage Aoe Static Cache Url Blacklist</title>
-                                <sort_order>0</sort_order>
-                                <children>
-                                    <save translate="title">
-                                        <title>Save Url Pattern</title>
-                                        <sort_order>0</sort_order>
-                                    </save>
-                                    <delete translate="title">
-                                        <title>Delete Url Pattern</title>
-                                        <sort_order>10</sort_order>
-                                    </delete>
-                                </children>
-                            </aoestatic_blacklistUrlPattern>
                         </children>
                     </system>
                 </children>

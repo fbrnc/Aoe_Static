@@ -15,9 +15,6 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
     /** @var array */
     protected $_adapterInstances = array();
 
-    /** @var array|null */
-    protected $_blacklist = null;
-
     /**
      * @return Aoe_Static_Model_Config
      */
@@ -65,21 +62,6 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             $result = array_merge($result, $adapter->purgeAll());
         }
         return $result;
-    }
-
-    /**
-     * Get array of blacklist url patterns
-     *
-     * @return array
-     */
-    public function  getBlacklist()
-    {
-        if (is_null($this->_blacklist)) {
-            /** @var Aoe_Static_Model_Resource_BlacklistUrlPattern_Collection $collection */
-            $collection = Mage::getResourceModel('aoestatic/blacklistUrlPattern_collection');
-            $this->_blacklist = $collection->getColumnValues('pattern');
-        }
-        return $this->_blacklist;
     }
 
     /**

@@ -23,10 +23,6 @@
                     <custom_url>
                         <table>aoestatic_custom_url</table>
                     </custom_url>
-
-                    <blacklist_url_pattern>
-                        <table>aoestatic_blacklist_url_pattern</table>
-                    </blacklist_url_pattern>
                 </entities>
             </aoestatic_resource>
         </models>
