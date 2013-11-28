@@ -6,7 +6,7 @@ class Aoe_Static_Model_Cache_Control
     protected $_tags = array();
 
     /** @var int minimum maxage */
-    protected $_maxAge = 0;
+    protected $_maxAge = 86400;
 
     /** @var bool switch to disable sending out of cache headers */
     protected $_enabled = true;
@@ -44,7 +44,7 @@ class Aoe_Static_Model_Cache_Control
         }
 
         foreach ($maxAge as $timestamp) {
-            if (!$this->_maxAge || ($timestamp < $this->_maxAge)) {
+            if ($timestamp > 0 && (!$this->_maxAge || ($timestamp < $this->_maxAge))) {
                 $this->_maxAge = $timestamp;
             }
         }
