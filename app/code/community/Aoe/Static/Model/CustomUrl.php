@@ -47,4 +47,21 @@ class Aoe_Static_Model_CustomUrl extends Mage_Core_Model_Abstract
     {
         $this->getResource()->deleteCustomUrls($customUrlIds);
     }
+
+    /**
+     * purge URL from static cache to make sure the max-age is correct set for the cache server
+     *
+     * @return $this
+     */
+    protected function _afterSave()
+    {
+        $url = $this->getRequestPath();
+        if (Mage::getStoreConfig('web/url/use_store')) {
+            $url = Mage::app()->getStore($this->getStoreId())->getCode() . '/' . $url;
+        }
+
+        Mage::helper('aoestatic')->purge(array($url));
+
+        return $this;
+    }
 }
