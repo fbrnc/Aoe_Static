@@ -6,7 +6,7 @@ class Aoe_Static_Model_Cache_Control
     protected $_tags = array();
 
     /** @var int minimum maxage */
-    protected $_maxAge = 86400;
+    protected $_maxAge = 0;
 
     /** @var bool switch to disable sending out of cache headers */
     protected $_enabled = true;
@@ -102,7 +102,7 @@ class Aoe_Static_Model_Cache_Control
      */
     public function applyCacheHeaders()
     {
-        if ($this->_enabled) {
+        if ($this->_enabled && $this->_maxAge) {
             $response = Mage::app()->getResponse();
             $response->setHeader('X-Invalidated-By', self::DELIMITER . implode(self::DELIMITER, array_keys($this->_tags)) . self::DELIMITER);
             $response->setHeader('Cache-Control', 'max-age=' . (int) $this->_maxAge, true);
