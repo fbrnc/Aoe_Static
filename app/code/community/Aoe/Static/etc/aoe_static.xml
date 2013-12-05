@@ -56,22 +56,24 @@
                 <Cache-Control>no-cache</Cache-Control>
             </headers>
             <cookies>
-                <aoestatic_customername>
+                <customername>
+                    <scope>customer</scope><!-- global/website/store/customer (customer will check the configuration in customer/account_share/scope) -->
                     <value>###CUSTOMERNAME###</value>
                     <period>3600</period>
                     <path><![CDATA[/]]></path>
                     <!-- <domain></domain>
                     <secure></secure>-->
                     <httponly>0</httponly>
-                </aoestatic_customername>
-                <aoestatic_numberofitemsincart>
+                </customername>
+                <numberofitemsincart>
+                    <scope>customer</scope><!-- global/website/store/customer (customer will check the configuration in customer/account_share/scope) -->
                     <value>###NUMBEROFITEMSINCART###</value>
                     <period>3600</period>
                     <path><![CDATA[/]]></path>
                     <!-- <domain></domain>
                     <secure></secure>-->
                     <httponly>0</httponly>
-                </aoestatic_numberofitemsincart>
+                </numberofitemsincart>
             </cookies>
         </uncached>
 
