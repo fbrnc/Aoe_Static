@@ -32,8 +32,8 @@ var Aoe_Static = {
             jQuery('.aoestatic_notloggedin').hide();
             jQuery('.aoestatic_loggedin').show();
         } else {
-            jQuery('.aoestatic_notloggedin').hide();
-            jQuery('.aoestatic_loggedin').show();
+            jQuery('.aoestatic_loggedin').hide();
+            jQuery('.aoestatic_notloggedin').show();
         }
     },
 
@@ -41,7 +41,7 @@ var Aoe_Static = {
      * Replace cookie content
      */
     replaceCookieContent: function() {
-        jQuery.each(this.getCookieContent(), function(name, data) {
+        jQuery.each(this.getCookieContent(), function(name, value) {
             jQuery('.aoestatic_' + name).text(value);
             // console.log('Replacing ".aoestatic_' + name + '" with "' + value + '"');
         })
@@ -49,7 +49,7 @@ var Aoe_Static = {
 
     isLoggedIn: function() {
         var cookieValues = this.getCookieContent();
-        return typeof cookieValues['customername'] != 'undefined' && cookieValues['customername'] == true;
+        return typeof cookieValues['customername'] != 'undefined' && cookieValues['customername'].length;
     },
 
     /**
@@ -75,10 +75,10 @@ var Aoe_Static = {
 
         var cookieValues = {};
         jQuery.each(values, function(name, data) {
-            if (typeof data['s' + this.storeId] != 'undefined') {
-                cookieValues[name] = data['s' + this.storeId];
-            } else if (typeof data['w' + this.websiteId] != 'undefined') {
-                cookieValues[name] = data['w' + this.websiteId];
+            if (typeof data['s' + Aoe_Static.storeId] != 'undefined') {
+                cookieValues[name] = data['s' + Aoe_Static.storeId];
+            } else if (typeof data['w' + Aoe_Static.websiteId] != 'undefined') {
+                cookieValues[name] = data['w' + Aoe_Static.websiteId];
             } else if (typeof data['g'] != 'undefined') {
                 cookieValues[name] = data['g'];
             }
