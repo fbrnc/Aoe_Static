@@ -143,7 +143,7 @@ class Aoe_Static_Model_Observer
                 } elseif ($scope == 'store') {
                     $scopePart = 's'.Mage::app()->getStore()->getId();
                 } else {
-                    Mage::log("Invalid scope '$scope'", Zend_Log::ERR);
+                    Mage::log("[AOE_Static::applyConf] Invalid scope '$scope'", Zend_Log::ERR);
                 }
 
                 $name = 'aoestatic_' . $scopePart . '_' . $name;
