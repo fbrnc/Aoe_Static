@@ -124,6 +124,7 @@ class Aoe_Static_Model_Observer
                 if (1 == $cookieConf->disabled) {
                     continue;
                 }
+                $scope    = $cookieConf->period ? (string) $cookieConf->scope : 'customer';
                 $value    = (string) $cookieConf->value;
                 $value    = $cacheMarker->replaceMarkers($value);
                 $period   = $cookieConf->period ? (string) $cookieConf->period : null;
@@ -131,6 +132,21 @@ class Aoe_Static_Model_Observer
                 $domain   = $cookieConf->domain ? (string) $cookieConf->domain : null;
                 $secure   = $cookieConf->secure ? filter_var($cookieConf->secure, FILTER_VALIDATE_BOOLEAN) : null;
                 $httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
+
+                if ($scope == 'customer') {
+                    $scope = Mage::getStoreConfig('customer/account_share/scope') == 0 ? 'global' : 'website';
+                }
+                if ($scope == 'global') {
+                    $scopePart = 'g';
+                } elseif ($scope == 'website') {
+                    $scopePart = 'w'.Mage::app()->getWebsite()->getId();
+                } elseif ($scope == 'store') {
+                    $scopePart = 's'.Mage::app()->getStore()->getId();
+                } else {
+                    Mage::log("[AOE_Static::applyConf] Invalid scope '$scope'", Zend_Log::ERR);
+                }
+
+                $name = 'aoestatic_' . $scopePart . '_' . $name;
 
                 $cookie->set($name, $value, $period, $path, $domain, $secure, $httponly);
             }
