@@ -133,7 +133,7 @@ class Aoe_Static_Model_Observer
                 $secure   = $cookieConf->secure ? filter_var($cookieConf->secure, FILTER_VALIDATE_BOOLEAN) : null;
                 $httponly = $cookieConf->httponly ? filter_var($cookieConf->httponly, FILTER_VALIDATE_BOOLEAN) : null;
 
-                if ($scope == 'customer') {
+                if (($scope == 'customer') || !in_array($scope, array('global', 'website', 'store'))) {
                     $scope = Mage::getStoreConfig('customer/account_share/scope') == 0 ? 'global' : 'website';
                 }
                 if ($scope == 'global') {
@@ -142,8 +142,6 @@ class Aoe_Static_Model_Observer
                     $scopePart = 'w'.Mage::app()->getWebsite()->getId();
                 } elseif ($scope == 'store') {
                     $scopePart = 's'.Mage::app()->getStore()->getId();
-                } else {
-                    Mage::log("[AOE_Static::applyConf] Invalid scope '$scope'", Zend_Log::ERR);
                 }
 
                 $name = 'aoestatic_' . $scopePart . '_' . $name;
