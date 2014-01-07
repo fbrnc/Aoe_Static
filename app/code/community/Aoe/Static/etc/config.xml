@@ -119,15 +119,15 @@
                 </observers>
             </controller_action_layout_load_before>
 
-            <core_block_abstract_to_html_before>
+            <core_block_abstract_to_html_after>
                 <observers>
                     <aoe_static>
                         <type>singleton</type>
                         <class>aoestatic/observer</class>
-                        <method>coreBlockAbstractToHtmlBefore</method>
+                        <method>coreBlockAbstractToHtmlAfter</method>
                     </aoe_static>
                 </observers>
-            </core_block_abstract_to_html_before>
+            </core_block_abstract_to_html_after>
         </events>
     </frontend>
 

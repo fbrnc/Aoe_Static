@@ -198,7 +198,7 @@ class Aoe_Static_Model_Observer
      *
      * @param Varien_Event_Observer $observer
      */
-    public function coreBlockAbstractToHtmlBefore(Varien_Event_Observer $observer)
+    public function coreBlockAbstractToHtmlAfter(Varien_Event_Observer $observer)
     {
         $block = $observer->getBlock();
 
