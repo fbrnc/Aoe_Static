@@ -1,7 +1,7 @@
-./app/code/community/Aoe/Static ./app/code/community/Aoe/Static
-./app/design/adminhtml/default/default/layout/aoestatic/ ./app/design/adminhtml/default/default/layout/aoestatic/
-./app/design/adminhtml/default/default/template/aoestatic/ ./app/design/adminhtml/default/default/template/aoestatic/
-./app/design/frontend/base/default/layout/aoestatic/ ./app/design/frontend/base/default/layout/aoestatic/
-./app/design/frontend/base/default/template/aoestatic/ ./app/design/frontend/base/default/template/aoestatic/
-./app/etc/modules/Aoe_Static.xml ./app/etc/modules/Aoe_Static.xml
-./js/aoestatic/ ./js/aoestatic/
+app/code/community/Aoe/Static app/code/community/Aoe/Static
+app/design/adminhtml/default/default/layout/aoestatic/ app/design/adminhtml/default/default/layout/aoestatic/
+app/design/adminhtml/default/default/template/aoestatic/ app/design/adminhtml/default/default/template/aoestatic/
+app/design/frontend/base/default/layout/aoestatic/ app/design/frontend/base/default/layout/aoestatic/
+app/design/frontend/base/default/template/aoestatic/ app/design/frontend/base/default/template/aoestatic/
+app/etc/modules/Aoe_Static.xml app/etc/modules/Aoe_Static.xml
+js/aoestatic/ js/aoestatic/
