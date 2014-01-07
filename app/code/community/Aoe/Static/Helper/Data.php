@@ -118,9 +118,10 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      * purge given tag(s)
      *
      * @param string|array $tags
+     * @param int $storeId
      * @return array
      */
-    public function purgeTags($tags)
+    public function purgeTags($tags, $storeId = 0)
     {
         // if Varnish is not enabled on admin don't do anything
         if (!Mage::app()->useCache('aoestatic')) {
@@ -129,6 +130,15 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
 
         if (!is_array($tags)) {
             $tags = array($tags);
+        }
+
+        // apply necessary additions
+        $suffix = '-';
+        if ($storeId) {
+            $suffix .= $storeId . Aoe_Static_Model_Cache_Control::DELIMITER;
+        }
+        foreach ($tags as $k => $v) {
+            $tags[$k] = $v . $suffix;
         }
 
         $result = array();

@@ -95,7 +95,7 @@ class Aoe_Static_Model_Cache_Adapter_Varnish implements Aoe_Static_Model_Cache_A
                 curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, 0);
                 curl_setopt($curlHandler, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($curlHandler, CURLOPT_HTTPHEADER, array('X-Invalidates: ' . Aoe_Static_Model_Cache_Control::DELIMITER . $tag . Aoe_Static_Model_Cache_Control::DELIMITER));
+                curl_setopt($curlHandler, CURLOPT_HTTPHEADER, array('X-Invalidates: ' . Aoe_Static_Model_Cache_Control::DELIMITER . $tag));
 
                 curl_multi_add_handle($multiHandler, $curlHandler);
                 $curlHandlers[] = $curlHandler;

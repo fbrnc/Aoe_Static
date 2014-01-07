@@ -85,7 +85,10 @@ class Aoe_Static_Model_Cache_Control
             $tags = array($tags);
         }
 
+        $store = Mage::app()->getStore();
         foreach ($tags as $tag) {
+            $tag = $tag . '-' . $store->getId();
+
             if (!isset($this->_tags[$tag])) {
                 $this->_tags[$tag] = 0;
             }

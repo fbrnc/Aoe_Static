@@ -331,7 +331,7 @@ class Aoe_Static_Model_Observer
             }
         }
         if (!empty($purgetags)) {
-            $errors = Mage::helper('aoestatic')->purgeTags($purgetags);
+            $errors = Mage::helper('aoestatic')->purgeTags($purgetags, Mage::app()->getRequest()->getParam('store', 0));
             if (!empty($errors)) {
                 $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
             } else {
