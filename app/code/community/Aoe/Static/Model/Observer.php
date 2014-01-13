@@ -138,8 +138,10 @@ class Aoe_Static_Model_Observer
                     Mage::log("[AOE_Static::applyConf] Invalid scope '$scope'", Zend_Log::ERR);
                 } else {
                     if ($scope == 'customer') {
-                        $scopePart = Mage::getStoreConfig('customer/account_share/scope') == 0 ? 'g' : 'w';
-                    } else if ($scope == 'global') {
+                        $customerScope = (int) Mage::getStoreConfig('customer/account_share/scope');
+                        $scope = $customerScope == 0 ? 'global' : 'website';
+                    }
+                    if ($scope == 'global') {
                         $scopePart = 'g';
                     } elseif ($scope == 'website') {
                         $scopePart = 'w'.Mage::app()->getWebsite()->getId();
