@@ -276,10 +276,8 @@ class Aoe_Static_Model_Observer
      */
     protected function checkForMessages()
     {
-        if (
-            (false === $this->messagesToShow) &&
-            (Mage::app()->getLayout()->getMessagesBlock()->getMessageCollection()->count() > 0)
-        ) {
+        $messagesInSessionCount = Mage::getSingleton('core/session')->getMessages()->count();
+        if (false === $this->messagesToShow && $messagesInSessionCount > 0) {
             $this->messagesToShow = true;
         }
 
