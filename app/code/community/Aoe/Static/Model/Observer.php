@@ -55,7 +55,7 @@ class Aoe_Static_Model_Observer
         $session      = Mage::getSingleton('customer/session');
         /* @var $session Mage_Customer_Model_Session */
         if ($session->isLoggedIn()) {
-            $loggedIn     = '0';
+            $loggedIn     = '1';
             $customerName = Mage::helper('core')->escapeHtml($session->getCustomer()->getName());
         }
 
