@@ -44,7 +44,7 @@ sub vcl_recv {
 
     if (req.request == "BAN") {
         if (client.ip ~ cache_acl) {
-            ban("obj.http.X-Invalidated-By ~ " + req.http.X-Invalidates);
+            ban("obj.http.X-Tags ~ " + req.http.X-Tags);
             error 200 "Tag banned.";
         } else {
             error 405 "Not allowed.";
