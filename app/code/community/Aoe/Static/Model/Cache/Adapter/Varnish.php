@@ -85,21 +85,21 @@ class Aoe_Static_Model_Cache_Adapter_Varnish implements Aoe_Static_Model_Cache_A
         $curlHandlers = array(); // keep references for clean up
         $multiHandler = curl_multi_init();
 
+        $regex = '(' . implode('|', array_map('preg_quote', $tags)) . ')';
+
         foreach ($this->_varnishServers as $varnishServer) {
-            foreach ($tags as $tag) {
-                $varnishUrl = "http://" . $varnishServer;
+            $varnishUrl = "http://" . $varnishServer;
 
-                $curlHandler = curl_init();
-                curl_setopt($curlHandler, CURLOPT_URL, $varnishUrl);
-                curl_setopt($curlHandler, CURLOPT_CUSTOMREQUEST, 'BAN');
-                curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($curlHandler, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($curlHandler, CURLOPT_HTTPHEADER, array('X-Invalidates: ' . Aoe_Static_Model_Cache_Control::DELIMITER . $tag));
+            $curlHandler = curl_init();
+            curl_setopt($curlHandler, CURLOPT_URL, $varnishUrl);
+            curl_setopt($curlHandler, CURLOPT_CUSTOMREQUEST, 'BAN');
+            curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($curlHandler, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($curlHandler, CURLOPT_HTTPHEADER, array('X-Invalidates: ' . $regex));
 
-                curl_multi_add_handle($multiHandler, $curlHandler);
-                $curlHandlers[] = $curlHandler;
-            }
+            curl_multi_add_handle($multiHandler, $curlHandler);
+            $curlHandlers[] = $curlHandler;
         }
 
         do {
