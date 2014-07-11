@@ -12,7 +12,7 @@ class Aoe_Static_Model_Cache_Control
     protected $_enabled = true;
 
     /** @var string */
-    const DELIMITER = '/';
+    const DELIMITER = ' ';
 
     /**
      * @return $this
