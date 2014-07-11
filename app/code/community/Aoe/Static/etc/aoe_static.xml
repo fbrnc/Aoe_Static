@@ -56,6 +56,15 @@
                 <Cache-Control>no-cache</Cache-Control>
             </headers>
             <cookies>
+                <isloggedin>
+                    <scope>customer</scope>
+                    <value>###ISLOGGEDIN###</value>
+                    <period>3600</period>
+                    <path><![CDATA[/]]></path>
+                    <!-- <domain></domain>
+                    <secure></secure>-->
+                    <httponly>0</httponly>
+                </isloggedin>
                 <customername>
                     <scope>customer</scope><!-- global/website/store/customer (customer will check the configuration in customer/account_share/scope) -->
                     <value>###CUSTOMERNAME###</value>
