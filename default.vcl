@@ -26,10 +26,6 @@ acl cache_acl {
 Like the default function, only that cookies don't prevent caching
 */
 sub vcl_recv {
-#    if (req.http.Host != "varnish.demo.aoemedia.de") {
-#        return (pipe);
-#    }
-
     # see http://www.varnish-cache.org/trac/wiki/VCLExampleNormalizeAcceptEncoding
     ### parse accept encoding rulesets to normalize
     if (req.http.Accept-Encoding) {
