@@ -75,13 +75,8 @@ sub vcl_recv {
     }
 
     # Force lookup if the request is a no-cache request from the client.
-    if (req.http.Cache-Control ~ "no-cache") {
-        if (client.ip ~ cache_acl) {
-            ban_url(req.url);
-            error 200 "Purged.";
-        } else {
-            error 405 "Not allowed.";
-        }
+    if (req.http.Cache-Control ~ "no-cache" && client.ip ~ cache_acl) {
+        set req.hash_always_miss = true;
     }
 
     # PURGE requests
