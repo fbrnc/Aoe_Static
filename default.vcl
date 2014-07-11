@@ -82,7 +82,7 @@ sub vcl_recv {
     # PURGE requests
     if (req.request == "PURGE") {
         if (client.ip ~ cache_acl) {
-            ban_url(req.url);
+            ban("obj.http.X-Url ~ " + req.url);
             error 200 "Purged.";
         } else {
             error 405 "Not allowed.";
@@ -121,6 +121,8 @@ sub vcl_fetch {
         set beresp.http.X_AOESTATIC_FETCH = "Nothing removed";
     }
 
+    # Add URL used for PURGE
+    set beresp.http.X-Url = req.url;
 
     # Don't cache negative lookups
     if (beresp.status >= 400) {
@@ -163,10 +165,11 @@ sub vcl_fetch {
     }
 }
 
-/*
-Adding debugging information
-*/
 sub vcl_deliver {
+    # Remove URL used for PURGE
+    unset resp.http.X-Url;
+
+    # Adding debugging information
     if (obj.hits > 0) {
         set resp.http.X-Cache = "HIT (" + obj.hits + ")";
         set resp.http.Server = "Varnish (HIT: " + obj.hits + ")";
