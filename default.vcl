@@ -26,6 +26,31 @@ acl cache_acl {
 Like the default function, only that cookies don't prevent caching
 */
 sub vcl_recv {
+    # BAN requests
+    if (req.request == "BAN") {
+        if (client.ip ~ cache_acl) {
+            ban("obj.http.X-Tags ~ " + req.http.X-Tags);
+            error 200 "OK";
+        } else {
+            error 405 "Method Not Allowed";
+        }
+    }
+
+    # PURGE requests
+    if (req.request == "PURGE") {
+        if (client.ip ~ cache_acl) {
+            ban("obj.http.X-Url ~ " + req.url);
+            error 200 "OK";
+        } else {
+            error 405 "Method Not Allowed";
+        }
+    }
+
+    # Force lookup if the request is a no-cache request from the client.
+    if (req.http.Cache-Control ~ "no-cache" && client.ip ~ cache_acl) {
+        set req.hash_always_miss = true;
+    }
+
     # see http://www.varnish-cache.org/trac/wiki/VCLExampleNormalizeAcceptEncoding
     ### parse accept encoding rulesets to normalize
     if (req.http.Accept-Encoding) {
@@ -42,21 +67,13 @@ sub vcl_recv {
         }
     }
 
-    if (req.request == "BAN") {
-        if (client.ip ~ cache_acl) {
-            ban("obj.http.X-Tags ~ " + req.http.X-Tags);
-            error 200 "Tag banned.";
-        } else {
-            error 405 "Not allowed.";
-        }
-    }
-
     if (req.http.x-forwarded-for) {
         set req.http.X-Forwarded-For =
         req.http.X-Forwarded-For + ", " + client.ip;
     } else {
         set req.http.X-Forwarded-For = client.ip;
     }
+
     if (req.request != "GET" &&
         req.request != "HEAD" &&
         req.request != "PUT" &&
@@ -72,21 +89,6 @@ sub vcl_recv {
     if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)$") {
         # Pretend no cookie was passed
         remove req.http.Cookie;
-    }
-
-    # Force lookup if the request is a no-cache request from the client.
-    if (req.http.Cache-Control ~ "no-cache" && client.ip ~ cache_acl) {
-        set req.hash_always_miss = true;
-    }
-
-    # PURGE requests
-    if (req.request == "PURGE") {
-        if (client.ip ~ cache_acl) {
-            ban("obj.http.X-Url ~ " + req.url);
-            error 200 "Purged.";
-        } else {
-            error 405 "Not allowed.";
-        }
     }
 
     if (req.request != "GET" && req.request != "HEAD") {
