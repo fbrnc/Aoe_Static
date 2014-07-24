@@ -15,7 +15,7 @@ class Aoe_Static_Model_AsyncCacheObserver
         foreach ($jobCollection as $job) {
             /** @var $job Aoe_AsyncCache_Model_Job */
             /** @todo name */
-            if (!$job->getIsProcessed() && ($job->getMode() == Aoe_VarnishAsyncCache_Helper_Data::MODE_PURGEVARNISHURL)) {
+            if (!$job->getIsProcessed() && ($job->getMode() == Aoe_Static_Helper_Data::MODE_PURGEVARNISHURL)) {
                 $startTime = time();
                 $errors = Mage::helper('aoestatic')->purge($job->getTags(), false);
                 $job->setDuration(time() - $startTime);

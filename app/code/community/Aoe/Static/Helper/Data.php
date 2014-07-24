@@ -6,6 +6,8 @@
  */
 class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const MODE_PURGEVARNISHURL = 'purgeVarnishUrl';
+
     /** @var null|Aoe_Static_Model_Config */
     protected $_config = null;
 

@@ -61,9 +61,9 @@ var Aoe_Static = {
         jQuery.each(jQuery.cookie(), function(name, value) {
             if (name.substr(0, 10) == 'aoestatic_') {
                 name = name.substr(10);
-                var parts = name.split('_')
+                var parts = name.split('_');
                 var scope = parts.splice(0, 1)[0];
-                var name = parts.join('_');
+                name = parts.join('_');
                 if (name && scope) {
                     if (typeof values[name] == 'undefined') {
                         values[name] = {};
@@ -138,6 +138,6 @@ var Aoe_Static = {
 
         });
     }
-}
+};
 
 
