@@ -86,16 +86,17 @@ sub vcl_recv {
         return (pipe);
     }
 
+    if (req.request != "GET" && req.request != "HEAD") {
+        /* We only deal with GET and HEAD by default */
+        return (pass);
+    }
+
     # Some known-static file types
     if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)$") {
         # Pretend no cookie was passed
         remove req.http.Cookie;
     }
 
-    if (req.request != "GET" && req.request != "HEAD") {
-        /* We only deal with GET and HEAD by default */
-        return (pass);
-    }
     if (req.http.Authorization) {
         /* Not cacheable by default */
         return (pass);
