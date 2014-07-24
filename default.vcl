@@ -115,8 +115,8 @@ sub vcl_fetch {
         remove beresp.http.Pragma;
         set beresp.http.Cache-Control = "public";
         set beresp.grace = 2m;
-        set beresp.http.X_AOESTATIC_FETCH = "Removed cookie in vcl_fetch";
         set beresp.ttl = 1d;
+        set beresp.http.X_AOESTATIC_FETCH = "Removed cookie in vcl_fetch";
     } else {
         set beresp.http.X_AOESTATIC_FETCH = "Nothing removed";
     }
