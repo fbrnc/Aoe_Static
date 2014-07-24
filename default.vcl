@@ -178,3 +178,9 @@ sub vcl_deliver {
         set resp.http.Server = "Varnish (MISS)";
     }
 }
+
+sub vcl_pipe {
+    # http://www.varnish-cache.org/ticket/451
+    # This forces every pipe request to be the first one.
+    set bereq.http.connection = "close";
+}
