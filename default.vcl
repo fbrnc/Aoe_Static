@@ -70,8 +70,8 @@ sub vcl_recv {
 
     # Some known-static file types
     if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)$") {
-        # Pretent no cookie was passed
-        unset req.http.Cookie;
+        # Pretend no cookie was passed
+        remove req.http.Cookie;
     }
 
     # Force lookup if the request is a no-cache request from the client.
@@ -167,7 +167,7 @@ sub vcl_fetch {
 
 sub vcl_deliver {
     # Remove URL used for PURGE
-    unset resp.http.X-Url;
+    remove resp.http.X-Url;
 
     # Adding debugging information
     if (obj.hits > 0) {
