@@ -13,7 +13,14 @@ class Aoe_Static_Model_Cache_Adapter_Varnish implements Aoe_Static_Model_Cache_A
      */
     public function __construct()
     {
-        $this->_varnishServers = Mage::helper('aoestatic')->trimExplode("\n", Mage::getStoreConfig('dev/aoestatic/servers'), true);
+        $serverConfig = Mage::getStoreConfig('dev/aoestatic/servers');
+        if (strpos($serverConfig, ',') !== false) {
+            // old format - comma-separated list of servers
+            $this->_varnishServers = Mage::helper('aoestatic')->trimExplode(",", $serverConfig, true);
+        } else {
+            // new format - newline-separated list of servers
+            $this->_varnishServers = Mage::helper('aoestatic')->trimExplode("\n", $serverConfig, true);
+        }
     }
 
     /**
