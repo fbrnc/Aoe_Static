@@ -12,13 +12,6 @@ class Aoe_Static_Model_Observer
      */
     protected $messagesToShow = false;
 
-    /**
-     * Temporary storage for already processed entries
-     *
-     * @var array
-     */
-    public $_processedTags = array();
-
     const REGISTRY_SKIPPABLE_NAME = 'aoestatic_skippableProductsForPurging';
 
     /**
@@ -55,7 +48,7 @@ class Aoe_Static_Model_Observer
         $session      = Mage::getSingleton('customer/session');
         /* @var $session Mage_Customer_Model_Session */
         if ($session->isLoggedIn()) {
-            $loggedIn     = '0';
+            $loggedIn     = '1';
             $customerName = Mage::helper('core')->escapeHtml($session->getCustomer()->getName());
         }
 
@@ -291,6 +284,7 @@ class Aoe_Static_Model_Observer
         /** @var Mage_Adminhtml_Model_Session $session */
         $session = Mage::getSingleton('adminhtml/session');
         $tags = $observer->getTags();
+        $tags = array_filter(array_unique((array)$tags));
 
         // check if we should process tags from product which has no relevant changes
         $skippableProductIds = Mage::registry(self::REGISTRY_SKIPPABLE_NAME);
@@ -304,9 +298,8 @@ class Aoe_Static_Model_Observer
             }
         }
 
-        $purgetags = array();
-        if ($tags == array()) {
-            $errors = Mage::helper('aoestatic')->purgeAll();
+        if (empty($tags)) {
+            $errors = $helper->purgeAll();
             if (!empty($errors)) {
                 $session->addError($helper->__("Static Purge failed"));
             } else {
@@ -316,14 +309,10 @@ class Aoe_Static_Model_Observer
             return $this;
         }
 
+        $purgetags = array();
+
         // compute the urls for affected entities
-        foreach ((array)$tags as $tag) {
-            if (in_array($tag, $this->_processedTags)) {
-                continue;
-            }
-
-            $this->_processedTags[] = $tag;
-
+        foreach ($tags as $tag) {
             //catalog_product_100 or catalog_category_186
             $tag_fields = explode('_', $tag);
             if (count($tag_fields) == 3) {
@@ -332,8 +321,9 @@ class Aoe_Static_Model_Observer
                 }
             }
         }
+
         if (!empty($purgetags)) {
-            $errors = Mage::helper('aoestatic')->purgeTags($purgetags, Mage::app()->getRequest()->getParam('store', 0));
+            $errors = $helper->purgeTags($purgetags, Mage::app()->getRequest()->getParam('store', 0));
             if (!empty($errors)) {
                 $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
             } else {

@@ -26,10 +26,6 @@ acl cache_acl {
 Like the default function, only that cookies don't prevent caching
 */
 sub vcl_recv {
-#    if (req.http.Host != "varnish.demo.aoemedia.de") {
-#        return (pipe);
-#    }
-
     # see http://www.varnish-cache.org/trac/wiki/VCLExampleNormalizeAcceptEncoding
     ### parse accept encoding rulesets to normalize
     if (req.http.Accept-Encoding) {
@@ -48,7 +44,7 @@ sub vcl_recv {
 
     if (req.request == "BAN") {
         if (client.ip ~ cache_acl) {
-            ban("obj.http.X-Invalidated-By ~ " + req.http.X-Invalidates);
+            ban("obj.http.X-Tags ~ " + req.http.X-Tags);
             error 200 "Tag banned.";
         } else {
             error 405 "Not allowed.";
@@ -74,24 +70,19 @@ sub vcl_recv {
 
     # Some known-static file types
     if (req.url ~ "^[^?]*\.(css|js|htc|xml|txt|swf|flv|pdf|gif|jpe?g|png|ico)$") {
-        # Pretent no cookie was passed
-        unset req.http.Cookie;
+        # Pretend no cookie was passed
+        remove req.http.Cookie;
     }
 
     # Force lookup if the request is a no-cache request from the client.
-    if (req.http.Cache-Control ~ "no-cache") {
-        if (client.ip ~ cache_acl) {
-            ban_url(req.url);
-            error 200 "Purged.";
-        } else {
-            error 405 "Not allowed.";
-        }
+    if (req.http.Cache-Control ~ "no-cache" && client.ip ~ cache_acl) {
+        set req.hash_always_miss = true;
     }
 
     # PURGE requests
     if (req.request == "PURGE") {
         if (client.ip ~ cache_acl) {
-            ban_url(req.url);
+            ban("obj.http.X-Url ~ " + req.url);
             error 200 "Purged.";
         } else {
             error 405 "Not allowed.";
@@ -130,6 +121,8 @@ sub vcl_fetch {
         set beresp.http.X_AOESTATIC_FETCH = "Nothing removed";
     }
 
+    # Add URL used for PURGE
+    set beresp.http.X-Url = req.url;
 
     # Don't cache negative lookups
     if (beresp.status >= 400) {
@@ -172,10 +165,11 @@ sub vcl_fetch {
     }
 }
 
-/*
-Adding debugging information
-*/
 sub vcl_deliver {
+    # Remove URL used for PURGE
+    remove resp.http.X-Url;
+
+    # Adding debugging information
     if (obj.hits > 0) {
         set resp.http.X-Cache = "HIT (" + obj.hits + ")";
         set resp.http.Server = "Varnish (HIT: " + obj.hits + ")";
