@@ -27,7 +27,24 @@ class Aoe_Static_Model_AsyncCacheObserver
                     }
                 }
 
-                Mage::log(sprintf('[ASYNCCACHE] MODE: %s, DURATION: %s sec, TAGS: %s',
+                Mage::log(sprintf('[ASYNCCACHE URL] MODE: %s, DURATION: %s sec, TAGS: %s',
+                    $job->getMode(),
+                    $job->getDuration(),
+                    implode(', ', $job->getTags())
+                ));
+            } else if (!$job->getIsProcessed() && ($job->getMode() == Aoe_Static_Helper_Data::MODE_PURGEVARNISHTAG)) {
+                $startTime = time();
+                $errors = Mage::helper('aoestatic')->purgeTags($job->getTags(), 0, false);
+                $job->setDuration(time() - $startTime);
+                $job->setIsProcessed(true);
+
+                if (!empty($errors)) {
+                    foreach ($errors as $error) {
+                        Mage::log($error);
+                    }
+                }
+
+                Mage::log(sprintf('[ASYNCCACHE TAG] MODE: %s, DURATION: %s sec, TAGS: %s',
                     $job->getMode(),
                     $job->getDuration(),
                     implode(', ', $job->getTags())
