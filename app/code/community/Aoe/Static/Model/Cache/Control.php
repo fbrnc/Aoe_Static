@@ -12,7 +12,10 @@ class Aoe_Static_Model_Cache_Control
     protected $_enabled = true;
 
     /** @var string */
-    const DELIMITER = ' ';
+    const TAG_DELIMITER = ' ';
+
+    /** @var string */
+    const PART_DELIMITER = '-';
 
     /**
      * @return $this
@@ -74,7 +77,7 @@ class Aoe_Static_Model_Cache_Control
     }
 
     /**
-     * adds tag(s) to currect cache
+     * adds tag(s) to current cache
      *
      * @param $tags array|string
      * @return $this
@@ -85,10 +88,8 @@ class Aoe_Static_Model_Cache_Control
             $tags = array($tags);
         }
 
-        $store = Mage::app()->getStore();
         foreach ($tags as $tag) {
-            $tag = $tag . '-' . $store->getId();
-
+            $tag = $this->normalizeTag($tag, true);
             if (!isset($this->_tags[$tag])) {
                 $this->_tags[$tag] = 0;
             }
@@ -99,6 +100,29 @@ class Aoe_Static_Model_Cache_Control
     }
 
     /**
+     * Parse the requested tag and return a clean version
+     *
+     * @param string $tag
+     * @param bool   $withStore
+     *
+     * @return string
+     */
+    public function normalizeTag($tag, $withStore = false)
+    {
+        if(is_array($tag)) {
+            $tag = implode(self::PART_DELIMITER, $tag);
+        }
+
+        $tag = str_replace(array("\r\n", "\r", "\n", self::TAG_DELIMITER), '_', strtoupper(trim($tag)));
+
+        if ($withStore) {
+            $tag .= self::PART_DELIMITER . Mage::app()->getStore()->getId();
+        }
+
+        return $tag;
+    }
+
+    /**
      * applies cache-headers if enabled is true (default)
      *
      * @return $this
@@ -106,11 +130,13 @@ class Aoe_Static_Model_Cache_Control
     public function applyCacheHeaders()
     {
         if ($this->_enabled && $this->_maxAge) {
+            $maxAge = (int) $this->_maxAge;
             $response = Mage::app()->getResponse();
-            $response->setHeader('X-Tags', implode(self::DELIMITER, array_keys($this->_tags)));
-            $response->setHeader('Cache-Control', 'max-age=' . (int) $this->_maxAge, true);
-            $response->setHeader('X-Magento-Lifetime', (int) $this->_maxAge, true);
-            $response->setHeader('aoestatic', 'cache', true);
+            $response->setHeader('Cache-Control', 'max-age=' . $maxAge, true);
+            $response->setHeader('Expires', gmdate("D, d M Y H:i:s", time() + $maxAge) . ' GMT', true);
+            $response->setHeader('X-Tags', implode(self::TAG_DELIMITER, array_keys($this->_tags)));
+            $response->setHeader('X-Aoestatic', 'cache', true);
+            $response->setHeader('X-Aoestatic-Lifetime', (int) $maxAge, true);
         }
 
         return $this;

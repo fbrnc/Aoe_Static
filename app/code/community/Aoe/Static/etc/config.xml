@@ -177,6 +177,7 @@
         <dev>
             <aoestatic>
                 <servers><![CDATA[127.0.0.1:83]]></servers>
+                <debug>0</debug>
             </aoestatic>
         </dev>
     </default>

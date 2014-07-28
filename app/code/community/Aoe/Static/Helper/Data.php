@@ -121,10 +121,12 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
      * purge given tag(s)
      *
      * @param string|array $tags
-     * @param int $storeId
+     * @param bool         $withStore
+     * @param bool         $queue
+     *
      * @return array
      */
-    public function purgeTags($tags, $storeId = 0, $queue = true)
+    public function purgeTags($tags, $withStore = false, $queue = true)
     {
         // if Varnish is not enabled on admin don't do anything
         if (!Mage::app()->useCache('aoestatic')) {
@@ -135,13 +137,10 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             $tags = array($tags);
         }
 
-        // apply necessary additions
-        $suffix = '-';
-        if ($storeId) {
-            $suffix .= $storeId . Aoe_Static_Model_Cache_Control::DELIMITER;
-        }
+        /** @var Aoe_Static_Model_Cache_Control $cacheControl */
+        $cacheControl = Mage::getSingleton('aoestatic/cache_control');
         foreach ($tags as $k => $v) {
-            $tags[$k] = $v . $suffix;
+            $tags[$k] = $cacheControl->normalizeTag($v, $withStore);
         }
 
         $result = array();

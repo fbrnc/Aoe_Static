@@ -38,7 +38,7 @@
         <!-- This will be applied in any case -->
         <default>
             <headers>
-                <X-Magento-Action>###FULLACTIONNAME###</X-Magento-Action>
+                <X-Aoestatic-Action>###FULLACTIONNAME###</X-Aoestatic-Action>
             </headers>
             <markers>
                 <!-- Additional markers, here without hashes
@@ -52,8 +52,8 @@
         <!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
         <uncached>
             <headers>
-                <X-Magento-LoggedIn>###ISLOGGEDIN###</X-Magento-LoggedIn>
                 <Cache-Control>no-cache</Cache-Control>
+                <X-Aoestatic-LoggedIn>###ISLOGGEDIN###</X-Aoestatic-LoggedIn>
             </headers>
             <cookies>
                 <isloggedin>
@@ -61,8 +61,6 @@
                     <value>###ISLOGGEDIN###</value>
                     <period>3600</period>
                     <path><![CDATA[/]]></path>
-                    <!-- <domain></domain>
-                    <secure></secure>-->
                     <httponly>0</httponly>
                 </isloggedin>
                 <customername>
@@ -70,8 +68,6 @@
                     <value>###CUSTOMERNAME###</value>
                     <period>3600</period>
                     <path><![CDATA[/]]></path>
-                    <!-- <domain></domain>
-                    <secure></secure>-->
                     <httponly>0</httponly>
                 </customername>
                 <numberofitemsincart>
@@ -79,8 +75,6 @@
                     <value>###NUMBEROFITEMSINCART###</value>
                     <period>3600</period>
                     <path><![CDATA[/]]></path>
-                    <!-- <domain></domain>
-                    <secure></secure>-->
                     <httponly>0</httponly>
                 </numberofitemsincart>
             </cookies>
@@ -93,8 +87,8 @@
                 <maxage>86400</maxage>
             </cache>
             <headers>
-                <X-Magento-Lifetime>86400</X-Magento-Lifetime>
-                <aoestatic>cache</aoestatic>
+                <X-Aoestatic>cache</X-Aoestatic>
+                <X-Aoestatic-Lifetime>86400</X-Aoestatic-Lifetime>
             </headers>
         </cms_index_index>
 
