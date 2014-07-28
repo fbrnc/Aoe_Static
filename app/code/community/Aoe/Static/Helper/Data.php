@@ -95,25 +95,26 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $urls = array_filter($urls);
-        $result = array();
-        foreach ($this->_getAdapterInstances() as $adapter) {
-            /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
 
-            // queue if async cache is enabled in config and not forced to purge directly
-            if ($this->getConfig()->useAsyncCache() && $queue) {
-                foreach ($urls as $url) {
-                    /** @var $asyncCache Aoe_AsyncCache_Model_Asynccache */
-                    $asyncCache = Mage::getModel('aoeasynccache/asynccache');
-                    $asyncCache->setTstamp(time())
-                        ->setMode(Aoe_Static_Helper_Data::MODE_PURGEVARNISHURL)
-                        ->setTags($url)
-                        ->setStatus(Aoe_AsyncCache_Model_Asynccache::STATUS_PENDING)
-                        ->save();
-                }
-            } else {
+        $result = array();
+        // queue if async cache is enabled in config and not forced to purge directly
+        if ($this->getConfig()->useAsyncCache() && $queue) {
+            foreach ($urls as $url) {
+                /** @var $asyncCache Aoe_AsyncCache_Model_Asynccache */
+                $asyncCache = Mage::getModel('aoeasynccache/asynccache');
+                $asyncCache->setTstamp(time())
+                    ->setMode(Aoe_Static_Helper_Data::MODE_PURGEVARNISHURL)
+                    ->setTags($url)
+                    ->setStatus(Aoe_AsyncCache_Model_Asynccache::STATUS_PENDING)
+                    ->save();
+            }
+        } else {
+            foreach ($this->_getAdapterInstances() as $adapter) {
+                /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
                 $result = array_merge($result, $adapter->purge($urls));
             }
         }
+
         return $result;
     }
 
@@ -144,24 +145,24 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         $result = array();
-        foreach ($this->_getAdapterInstances() as $adapter) {
-            /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
-
-            // queue if async cache is enabled in config and not forced to purge directly
-            if ($this->getConfig()->useAsyncCache() && $queue) {
-                foreach ($tags as $tag) {
-                    /** @var $asyncCache Aoe_AsyncCache_Model_Asynccache */
-                    $asyncCache = Mage::getModel('aoeasynccache/asynccache');
-                    $asyncCache->setTstamp(time())
-                        ->setMode(Aoe_Static_Helper_Data::MODE_PURGEVARNISHTAG)
-                        ->setTags($tag)
-                        ->setStatus(Aoe_AsyncCache_Model_Asynccache::STATUS_PENDING)
-                        ->save();
-                }
-            } else {
+        // queue if async cache is enabled in config and not forced to purge directly
+        if ($this->getConfig()->useAsyncCache() && $queue) {
+            foreach ($tags as $tag) {
+                /** @var $asyncCache Aoe_AsyncCache_Model_Asynccache */
+                $asyncCache = Mage::getModel('aoeasynccache/asynccache');
+                $asyncCache->setTstamp(time())
+                    ->setMode(Aoe_Static_Helper_Data::MODE_PURGEVARNISHTAG)
+                    ->setTags($tag)
+                    ->setStatus(Aoe_AsyncCache_Model_Asynccache::STATUS_PENDING)
+                    ->save();
+            }
+        } else {
+            foreach ($this->_getAdapterInstances() as $adapter) {
+                /** @var Aoe_Static_Model_Cache_Adapter_Interface $adapter */
                 $result = array_merge($result, $adapter->purgeTags($tags));
             }
         }
+
         return $result;
     }
 
