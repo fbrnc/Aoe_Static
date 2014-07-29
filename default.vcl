@@ -9,7 +9,63 @@ acl cache_acl {
     # insert additional ip's here
 }
 
+#########################################################################################################
+#########################################################################################################
+# include headers for comparing x-real-ip or x-forwarded-for against acl
+C{
+    #include <netinet/in.h>
+    #include <string.h>
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+}C
+#########################################################################################################
+#########################################################################################################
+
 sub vcl_recv {
+    if (req.http.X-Real-IP) {
+            #########################################################################################################
+            #########################################################################################################
+            // this is c code to allow matching from behind a proxy, using the X-Real-IP header
+            // taken from http://zcentric.com/2012/03/16/varnish-acl-with-x-forwarded-for-header/
+            C{
+                struct sockaddr_storage *client_ip_ss = VRT_r_client_ip(sp);
+                struct sockaddr_in *client_ip_si = (struct sockaddr_in *) client_ip_ss;
+                struct in_addr *client_ip_ia = &(client_ip_si->sin_addr);
+
+                char *xff_ip = VRT_GetHdr(sp, HDR_REQ, "\020X-Real-IP:");
+                if (xff_ip != NULL) {
+                    // Copy the ip address into the struct's sin_addr.
+                    inet_pton(AF_INET, xff_ip, client_ip_ia);
+                }
+            }C
+            #########################################################################################################
+            #########################################################################################################
+    }
+    else if (req.http.X-Forwarded-For) {
+        # Ensure we only have a single IP in X-Forwarded-For
+        set req.http.X-Forwarded-For = regsub(req.http.X-Forwarded-For, ",.*", "");
+
+        #########################################################################################################
+        #########################################################################################################
+        // this is c code to allow matching from behind a proxy, using the X-Forwarded-For header
+        // taken from http://zcentric.com/2012/03/16/varnish-acl-with-x-forwarded-for-header/
+        C{
+            struct sockaddr_storage *client_ip_ss = VRT_r_client_ip(sp);
+            struct sockaddr_in *client_ip_si = (struct sockaddr_in *) client_ip_ss;
+            struct in_addr *client_ip_ia = &(client_ip_si->sin_addr);
+
+            char *xff_ip = VRT_GetHdr(sp, HDR_REQ, "\020X-Forwarded-For:");
+            if (xff_ip != NULL) {
+                // Copy the ip address into the struct's sin_addr.
+                inet_pton(AF_INET, xff_ip, client_ip_ia);
+            }
+        }C
+        #########################################################################################################
+        #########################################################################################################
+
+        remove req.http.X-Forwarded-For;
+    }
+
     # Restricted processing
     if (client.ip ~ cache_acl) {
         # BAN requests
