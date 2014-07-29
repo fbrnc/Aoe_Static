@@ -47,7 +47,7 @@ class Aoe_Static_Model_Cache_Adapter_Varnish implements Aoe_Static_Model_Cache_A
         foreach($urls as $k => $url) {
             if(strpos($url, 'R:') === 0) {
                 unset($urls[$k]);
-                $regexPatterns[] = substr($url, 6);
+                $regexPatterns[] = substr($url, 2);
             }
         }
         $regexPatterns = (empty($regexPatterns) ? '' : '((' . implode(')|(', $regexPatterns) . '))');
