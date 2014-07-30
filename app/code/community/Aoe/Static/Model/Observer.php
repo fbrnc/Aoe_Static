@@ -74,8 +74,9 @@ class Aoe_Static_Model_Observer
             $conf = $this->_config->getActionConfiguration('uncached');
         }
 
-        // apply the configuration
-        if ($conf) {
+		$request = $controllerAction->getRequest();
+		// apply the configuration
+		if ($conf && $request->isDispatched()) {
             $this->applyConf($conf, $response);
         }
 
