@@ -12,6 +12,11 @@ class Aoe_Static_Model_Observer
      */
     protected $messagesToShow = false;
 
+    /**
+     * @var Aoe_Static_Model_Config
+     */
+    protected $_config;
+
     const REGISTRY_SKIPPABLE_NAME = 'aoestatic_skippableProductsForPurging';
 
     /**
