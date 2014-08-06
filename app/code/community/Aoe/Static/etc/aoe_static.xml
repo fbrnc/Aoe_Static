@@ -47,6 +47,10 @@
                 </MARKERNAMEWITHOUTHASHES>
                 -->
             </markers>
+            <handles>
+                <!-- This is to support compatibility with previous behaviour -->
+                <aoestatic_cacheable/>
+            </handles>
         </default>
 
         <!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
@@ -78,6 +82,11 @@
                     <httponly>0</httponly>
                 </numberofitemsincart>
             </cookies>
+            <handles>
+                <!-- This is to support compatibility with previous behaviour -->
+                <aoestatic_notcacheable/>
+                <aoestatic_cacheable disabled="1"/>
+            </handles>
         </uncached>
 
         <!-- Configuration for full action names... -->

@@ -176,9 +176,7 @@ class Aoe_Static_Model_Observer
         $controllerAction = $observer->getAction();
         $fullActionName = $controllerAction->getFullActionName();
 
-        $handle = $this->_config->getActionConfiguration($fullActionName) ? 'aoestatic_cacheable' : 'aoestatic_notcacheable';
-
-        $observer->getLayout()->getUpdate()->addHandle($handle);
+        $observer->getLayout()->getUpdate()->addHandle($this->getHandles($fullActionName));
     }
 
     /**
@@ -364,5 +362,44 @@ class Aoe_Static_Model_Observer
                 Mage::getSingleton('adminhtml/session')->addNotice($message);
             }
         }
+    }
+
+    /**
+     * Generate a list of additional layout handles based on the current full action name
+     *
+     * @param string $fullActionName
+     *
+     * @return string[]
+     */
+    protected function getHandles($fullActionName)
+    {
+        $handles = array();
+
+        // apply default configuration first
+        $conf = $this->_config->getActionConfiguration('default');
+        if ($conf && isset($conf->handles) && $conf->handles instanceof Mage_Core_Model_Config_Element) {
+            foreach($conf->handles->children() as $handle => $node) {
+                $enabled = !(isset($node['disabled']) && (bool)(string)$node['disabled']);
+                $handles[$handle] = $enabled;
+            }
+        }
+
+        // check if there is a configuration for this full action name
+        $conf = $this->_config->getActionConfiguration($fullActionName);
+        if (!$conf) {
+            // load the "uncached" configuration if no other configuration was found
+            $conf = $this->_config->getActionConfiguration('uncached');
+        }
+        if ($conf && isset($conf->handles) && $conf->handles instanceof Mage_Core_Model_Config_Element) {
+            foreach($conf->handles->children() as $handle => $node) {
+                $enabled = !(isset($node['disabled']) && (bool)(string)$node['disabled']);
+                $handles[$handle] = $enabled;
+            }
+        }
+
+        // Filter using the enabled/disabled flag and then grab the remaining array keys
+        $handles = array_keys(array_filter($handles));
+
+        return $handles;
     }
 }
