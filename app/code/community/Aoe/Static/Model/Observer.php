@@ -169,14 +169,21 @@ class Aoe_Static_Model_Observer
      */
     public function beforeLoadLayout(Varien_Event_Observer $observer)
     {
-        // check if we have messages to display
-        $this->messagesToShow = $this->checkForMessages();
+        /** @var Mage_Core_Model_Layout $layout */
+        $layout = $observer->getLayout();
+        if (!$layout instanceof Mage_Core_Model_Layout) {
+            return;
+        }
 
-        /* @var $controllerAction Mage_Core_Controller_Varien_Action */
-        $controllerAction = $observer->getAction();
-        $fullActionName = $controllerAction->getFullActionName();
+        /** @var Mage_Core_Controller_Varien_Action $action */
+        $action = $observer->getAction();
+        if (!$action instanceof Mage_Core_Controller_Varien_Action) {
+            return;
+        }
 
-        $observer->getLayout()->getUpdate()->addHandle($this->getHandles($fullActionName));
+        $this->checkForMessages();
+
+        $layout->getUpdate()->addHandle($this->getHandles($action->getFullActionName()));
     }
 
     /**
