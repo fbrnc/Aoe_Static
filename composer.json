@@ -1,0 +1,7 @@
+{
+  "name": "aoepeople/aoe_static",
+  "license": "GPL-3.0+",
+  "type": "magento-module",
+  "description": "Extension for integrating varnish",
+  "homepage": "http://fbrnc.net/blog/2011/05/make-your-magento-store-fly-using-varnish"
+}
