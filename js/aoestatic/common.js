@@ -121,20 +121,18 @@ var Aoe_Static = {
             }
             */
 
-            // E.T. phone home
-            if (typeof data.currentProductId !== 'undefined' || counter > 0) {
-                $.get(
-                    Aoe_Static.ajaxHomeUrl,
-                    data,
-                    function (response) {
-                        for(var id in response.blocks) {
-                            $('#' + id).html(response.blocks[id]);
-                        }
-                        jQuery('body').trigger('aoestatic_afterblockreplace', response);
-                    },
-                    'json'
-                );
-            }
+            // E.T. phone home, get blocks and pending flash-messages
+            $.get(
+                Aoe_Static.ajaxHomeUrl,
+                data,
+                function (response) {
+                    for(var id in response.blocks) {
+                        $('#' + id).html(response.blocks[id]);
+                    }
+                    jQuery('body').trigger('aoestatic_afterblockreplace', response);
+                },
+                'json'
+            );
 
         });
     }
