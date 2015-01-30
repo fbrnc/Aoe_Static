@@ -130,7 +130,7 @@ var Aoe_Static = {
                         for(var id in response.blocks) {
                             $('#' + id).html(response.blocks[id]);
                         }
-                        jQuery('body').trigger('aoestatic_afterblockreplace');
+                        jQuery('body').trigger('aoestatic_afterblockreplace', response);
                     },
                     'json'
                 );
@@ -139,5 +139,3 @@ var Aoe_Static = {
         });
     }
 };
-
-

@@ -9,6 +9,13 @@
 class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
 {
     /**
+     * places to look for messages
+     *
+     * @var array
+     */
+    protected $_sessions = array('core/session', 'customer/session', 'catalog/session', 'checkout/session');
+
+    /**
      * Index action. This action is called by an ajax request
      *
      * @return void
@@ -38,6 +45,22 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
                 }
             }
         }
+
+        $messages = array();
+        foreach ($this->_sessions as $sessionStorage) {
+            if (!isset($messages[$sessionStorage])) {
+                $messages[$sessionStorage] = array();
+            }
+            foreach (Mage::getSingleton($sessionStorage)->getMessages(true)->getItems() as $message) {
+                $type = $message->getType();
+                if (!isset($messages[$sessionStorage][$type])) {
+                    $messages[$sessionStorage][$type] = array();
+                }
+                $messages[$sessionStorage][$type][] = $message->getCode();
+            }
+        }
+        $response['messages'] = $messages;
+
         $this->getResponse()->setBody(Zend_Json::encode($response));
     }
 
