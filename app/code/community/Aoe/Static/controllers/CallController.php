@@ -40,4 +40,22 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
         }
         $this->getResponse()->setBody(Zend_Json::encode($response));
     }
+
+    /**
+     * The same as Index action, but strips out the session_id
+     */
+    public function secureAction()
+    {
+        // call original action
+        $this->indexAction();
+
+        // strip insecure data
+        $response = Zend_Json::decode($this->getResponse()->getBody());
+        $sid = $response['sid'];
+        unset($response['sid']);
+        foreach ($response['blocks'] as $id => &$content) {
+            $content = str_replace($sid, '__NO_SID__', $content);
+        }
+        $this->getResponse()->setBody(Zend_Json::encode($response));
+    }
 }
