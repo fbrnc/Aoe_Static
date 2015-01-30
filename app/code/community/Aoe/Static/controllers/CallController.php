@@ -16,6 +16,33 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
     protected $_sessions = array('core/session', 'customer/session', 'catalog/session', 'checkout/session');
 
     /**
+     * render requested blocks
+     *
+     * @param array|string $blocks
+     * @return array
+     */
+    protected function _renderBlocks($blocks)
+    {
+        $result = array();
+
+        if (!is_array($blocks)) {
+            $blocks = array($blocks);
+        }
+
+        $layout = $this->getLayout();
+        foreach ($blocks as $id => $requestedBlockName) {
+            $tmpBlock = $layout->getBlock($requestedBlockName);
+            if ($tmpBlock) {
+                $result[$id] = $tmpBlock->toHtml();
+            } else {
+                $result[$id] = 'BLOCK NOT FOUND';
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Index action. This action is called by an ajax request
      *
      * @return void
@@ -32,20 +59,14 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
         }
 
         $this->loadLayout();
-        $layout = $this->getLayout();
 
+        // get blocks
         $requestedBlockNames = $this->getRequest()->getParam('getBlocks');
-        if (is_array($requestedBlockNames)) {
-            foreach ($requestedBlockNames as $id => $requestedBlockName) {
-                $tmpBlock = $layout->getBlock($requestedBlockName);
-                if ($tmpBlock) {
-                    $response['blocks'][$id] = $tmpBlock->toHtml();
-                } else {
-                    $response['blocks'][$id] = 'BLOCK NOT FOUND';
-                }
-            }
+        if ($requestedBlockNames) {
+            $response['blocks'] = $this->_renderBlocks($requestedBlockNames);
         }
 
+        // get messages
         $messages = array();
         foreach ($this->_sessions as $sessionStorage) {
             if (!isset($messages[$sessionStorage])) {
@@ -65,20 +86,24 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
     }
 
     /**
-     * The same as Index action, but strips out the session_id
+     * The same as Index action, but strips out the session_id and doesn't return messages
      */
     public function secureAction()
     {
-        // call original action
-        $this->indexAction();
+        $this->loadLayout();
 
-        // strip insecure data
-        $response = Zend_Json::decode($this->getResponse()->getBody());
-        $sid = $response['sid'];
-        unset($response['sid']);
+        $response = array();
+        $requestedBlockNames = $this->getRequest()->getParam('getBlocks');
+        if ($requestedBlockNames) {
+            $response['blocks'] = $this->_renderBlocks($requestedBlockNames);
+        }
+
+        // strip SID from responses
+        $sid = Mage::getModel('core/session')->getEncryptedSessionId();
         foreach ($response['blocks'] as $id => &$content) {
             $content = str_replace($sid, '__NO_SID__', $content);
         }
+
         $this->getResponse()->setBody(Zend_Json::encode($response));
     }
 }
