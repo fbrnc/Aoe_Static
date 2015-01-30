@@ -124,7 +124,7 @@ var Aoe_Static = {
             // E.T. phone home
             if (typeof data.currentProductId !== 'undefined' || counter > 0) {
                 $.get(
-                    this.ajaxHomeUrl,
+                    Aoe_Static.ajaxHomeUrl,
                     data,
                     function (response) {
                         for(var id in response.blocks) {
