@@ -281,6 +281,29 @@ class Aoe_Static_Model_Observer
     }
 
     /**
+     * shows message in case admin session exists
+     *
+     * @param string $type    message type (error/success/notice)
+     * @param string $message actual message
+     * @return bool
+     */
+    protected function _addSessionMessage($type, $message)
+    {
+        if (!Mage::registry('_singleton/adminhtml/session')) {
+            return false;
+        }
+
+        if ($type == 'error') {
+            Mage::getSingleton('adminhtml/session')->addError($message);
+        } else if ($type == 'success') {
+            Mage::getSingleton('adminhtml/session')->addSuccess($message);
+        } else {
+            Mage::getSingleton('adminhtml/session')->addNotice($message);
+        }
+        return true;
+    }
+
+    /**
      * Listens to application_clean_cache event and gets notified when a product/category/cms model is saved
      *
      * @param $observer Mage_Core_Model_Observer
@@ -295,8 +318,6 @@ class Aoe_Static_Model_Observer
 
         /** @var Aoe_Static_Helper_Data $helper */
         $helper = Mage::helper('aoestatic');
-        /** @var Mage_Adminhtml_Model_Session $session */
-        $session = Mage::getSingleton('adminhtml/session');
         $tags = $observer->getTags();
         $tags = array_filter(array_unique((array)$tags));
 
@@ -315,9 +336,9 @@ class Aoe_Static_Model_Observer
         if (empty($tags)) {
             $errors = $helper->purgeAll();
             if (!empty($errors)) {
-                $session->addError($helper->__("Static Purge failed"));
+                $this->_addSessionMessage('error', $helper->__("Static Purge failed"));
             } else {
-                $session->addSuccess($helper->__("The Static cache storage has been flushed."));
+                $this->_addSessionMessage('success', $helper->__("Static Purge failed"));
             }
 
             return $this;
@@ -342,7 +363,7 @@ class Aoe_Static_Model_Observer
         if (!empty($purgetags)) {
             $errors = $helper->purgeTags($purgetags);
             if (!empty($errors)) {
-                $session->addError($helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
+                $this->_addSessionMessage('error', $helper->__("Some Static purges failed: <br/>") . implode("<br/>", $errors));
             } else {
                 $count = count($purgetags);
                 if ($count > 5) {
@@ -350,9 +371,7 @@ class Aoe_Static_Model_Observer
                     $purgetags[] = '...';
                     $purgetags[] = $helper->__("(Total number of purged urls: %d)", $count);
                 }
-                $session->addSuccess(
-                    $helper->__("Tag purges have been submitted successfully:<br/>") . implode("<br />", $purgetags)
-                );
+                $this->_addSessionMessage('success', $helper->__("Tag purges have been submitted successfully:<br/>") . implode("<br />", $purgetags));
             }
         }
         return $this;
