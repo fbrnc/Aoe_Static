@@ -3,6 +3,7 @@
  * static page delivered from Varnish
  *
  * @author Fabrizio Branca
+ * @author Bastian Ike
  */
 var Aoe_Static = {
 
@@ -106,6 +107,9 @@ var Aoe_Static = {
                 }
                 var rel = $(this).attr('rel');
                 if (rel) {
+                    if (localStorage.getItem('aoe_static_blocks_' + rel)) {
+                        $('#' + id).html(localStorage.getItem('aoe_static_blocks_' + rel));
+                    }
                     data.getBlocks[id] = rel;
                     counter++;
                 } else {
@@ -114,13 +118,6 @@ var Aoe_Static = {
                 }
             });
 
-            // add current product
-            /* This needs some serious refactoring anyways...
-            if (typeof currentproductid !== 'undefined' && currentproductid) {
-                data.currentProductId = currentproductid;
-            }
-            */
-
             // E.T. phone home, get blocks and pending flash-messages
             $.get(
                 Aoe_Static.ajaxHomeUrl,
@@ -128,12 +125,12 @@ var Aoe_Static = {
                 function (response) {
                     for(var id in response.blocks) {
                         $('#' + id).html(response.blocks[id]);
+                        localStorage.setItem('aoe_static_blocks_' + data.getBlocks[id], response.blocks[id]);
                     }
                     jQuery('body').trigger('aoestatic_afterblockreplace', response);
                 },
                 'json'
             );
-
         });
     }
 };
