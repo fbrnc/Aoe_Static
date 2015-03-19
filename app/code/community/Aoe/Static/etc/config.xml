@@ -77,6 +77,126 @@
                     </aoestatic>
                 </observers>
             </catalog_category_save_commit_after>
+
+
+            <!-- FULL REINDEX -->
+            <cataloginventory_stock_full_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>invalidateCacheAfterFullReindex</method>
+                    </aoestatic>
+                </observers>
+            </cataloginventory_stock_full_reindex>
+            <catalog_product_price_full_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>invalidateCacheAfterFullReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_product_price_full_reindex>
+            <catalog_product_flat_full_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>invalidateCacheAfterFullReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_product_flat_full_reindex>
+            <catalog_category_flat_full_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>invalidateCacheAfterFullReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_flat_full_reindex>
+            <catalog_category_product_full_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>invalidateCacheAfterFullReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_product_full_reindex>
+
+            <!-- PARTIAL PRODUCT REINDEX -->
+            <cataloginventory_stock_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanProductsCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </cataloginventory_stock_partial_reindex>
+            <catalog_product_price_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanProductsCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_product_price_partial_reindex>
+            <catalog_product_flat_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanProductsCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_product_flat_partial_reindex>
+            <catalog_category_product_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanProductsCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_product_partial_reindex>
+            <catalog_url_product_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanProductsCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_url_product_partial_reindex>
+
+            <!-- PARTIAL CATEGORY REINDEX -->
+            <catalog_category_flat_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanCategoriesCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_flat_partial_reindex>
+            <catalog_url_category_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanCategoriesCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_url_category_partial_reindex>
+            <catalog_url_category_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanCacheByTags</method>
+                    </aoestatic>
+                </observers>
+            </catalog_url_category_reindex>
+            <catalog_category_product_cat_partial_reindex>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/index_observer</class>
+                        <method>cleanCategoriesCacheAfterPartialReindex</method>
+                    </aoestatic>
+                </observers>
+            </catalog_category_product_cat_partial_reindex>
+
         </events>
     </global>
 
