@@ -55,6 +55,10 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
         $response['sid'] = Mage::getModel('core/session')->getEncryptedSessionId();
 
         if ($currentProductId = $this->getRequest()->getParam('currentProductId')) {
+            Mage::getModel('reports/product_index_viewed')
+                ->setProductId($currentProductId)
+                ->save()
+                ->calculate();
             Mage::getSingleton('catalog/session')->setLastViewedProductId($currentProductId);
         }
 
