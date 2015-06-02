@@ -42,10 +42,12 @@ var Aoe_Static = {
      * Replace cookie content
      */
     replaceCookieContent: function() {
+        jQuery('body').trigger('aoestatic_beforecookiereplace');
         jQuery.each(this.getCookieContent(), function(name, value) {
             jQuery('.aoestatic_' + name).text(value);
             // console.log('Replacing ".aoestatic_' + name + '" with "' + value + '"');
         })
+        jQuery('body').trigger('aoestatic_aftercookiereplace');
     },
 
     isLoggedIn: function() {
