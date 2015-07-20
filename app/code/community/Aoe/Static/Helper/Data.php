@@ -16,6 +16,11 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
     protected $_adapterInstances;
 
     /**
+     * Flag for verbose logging
+     */
+    protected $verboseLogging = false;
+
+    /**
      * @return Aoe_Static_Model_Config
      */
     public function getConfig()
@@ -24,6 +29,10 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             $this->_config = Mage::getModel('aoestatic/config');
         }
         return $this->_config;
+    }
+
+    public function __construct() {
+        $this->verboseLogging = Mage::getStoreConfigFlag('dev/aoestatic/verboseLogging');
     }
 
     /**
@@ -188,5 +197,18 @@ class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
             $result = $temp;
         }
         return $result;
+    }
+
+    /**
+     *
+     * @param string $message
+     * @param integer $level
+     * @param string $file
+     * @param bool $forceLog
+     */
+    public function log($message, $level = null, $file = '', $forceLog = false) {
+        if ($forceLog || $this->verboseLogging) {
+            Mage::log($message, $level, $file, $forceLog);
+        }
     }
 }
