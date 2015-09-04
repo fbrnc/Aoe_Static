@@ -163,23 +163,31 @@ class Aoe_Static_Model_Cache_Control
      */
     public function collectTags()
     {
-        if (Mage::registry('product')) {
-            $this->addTag('product-' . Mage::registry('product')->getId());
+        $tags = array();
+        $product = Mage::registry('product');
+        if ($product) {
+            $tags[] = 'product-' . $product->getId();
+            //add child products tags
+            if ($product->getTypeId() == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
+                $childProductsIds = $product->getTypeInstance()->getUsedProductIds();
+                foreach($childProductsIds as $id) {
+                    $tags[] = 'product-' . $id;
+                }
+            }
         }
         if (($layer = $this->_getLayer()) && ($layer->getCurrentCategory()->getId() != $layer->getCurrentStore()->getRootCategoryId()) && ($layer->apply()->getProductCollection())) {
             /** @var Mage_Catalog_Model_Layer $layer */
             $ids = $layer->getProductCollection()->getLoadedIds();
-            $tags = array();
             foreach ($ids as $id) {
                 $tags[] = 'product-' . $id;
             }
-            $this->addTag($tags);
         }
         if (Mage::registry('current_category')) {
             /** @var Mage_Catalog_Model_Category $currentCategory */
             $currentCategory = Mage::registry('current_category');
-            $this->addTag('category-' . $currentCategory->getId());
+            $tags[] = 'category-' . $currentCategory->getId();
         }
+        $this->addTag($tags);
         return $this;
     }
 }
