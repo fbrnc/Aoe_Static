@@ -1,5 +1,6 @@
-code/							app/code/local/Aoe/Static/
-js/aoestatic/					js/aoestatic/
-frontend/layout/aoestatic/		app/design/frontend/base/default/layout/aoestatic/
-frontend/template/aoestatic/	app/design/frontend/base/default/template/aoestatic/
-Aoe_Static.xml					app/etc/modules/Aoe_Static.xml
+code/                            app/code/local/Aoe/Static/
+js/aoestatic/                    js/aoestatic/
+frontend/layout/aoestatic/       app/design/frontend/base/default/layout/aoestatic/
+frontend/template/aoestatic/     app/design/frontend/base/default/template/aoestatic/
+adminhtml/layout/aoestatic/      app/design/adminhtml/default/default/layout/aoestatic/
+Aoe_Static.xml                   app/etc/modules/Aoe_Static.xml

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<aoe_static>
+
+		<!-- node reference -->
+		<!--
+		<default|uncached|$fullActionName>
+			<disabled>0|1</disabled> (defaults to 0)
+			<use>default|uncached|$fullActionName</use> (use other configuration instead)
+
+			<headers>
+				<key1>value1</key1>
+				<key2>value2</key2>
+					...
+				<keyX>valueX</keyX>
+			</headers>
+
+			<cookies>
+				<name1>
+					<value>value1</value>
+					<period>3600</period>
+					<path><![CDATA[/]]></path> (optional)
+					<domain></domain> (optional)
+					<secure></secure> (optional)
+					<httponly></httponly> (optional)
+				</name1>
+					...
+			</cookies>
+
+			All values (in headers and cookies) support following markers that will be automatically replaced
+			- ###FULLACTIONNAME###
+			- ###CUSTOMERNAME###
+			- ###ISLOGGEDIN###
+			- ###NUMBEROFITEMSINCART
+
+		</default|uncached|$fullActionName>
+		-->
+
+		<!-- This will be applied in any case -->
+        <default>
+            <headers>
+                <X-Magento-Action>###FULLACTIONNAME###</X-Magento-Action>
+            </headers>
+            <markers>
+                <!-- Additional markers, here without hashes
+                <MARKERNAMEWITHOUTHASHES>
+                    <valueCallback>some_module/fooclass::getValue</valueCallback>
+                </MARKERNAMEWITHOUTHASHES>
+                -->
+            </markers>
+        </default>
+
+		<!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
+		<uncached>
+			<headers>
+				<X-Magento-LoggedIn>###ISLOGGEDIN###</X-Magento-LoggedIn>
+				<Cache-Control>no-cache</Cache-Control>
+			</headers>
+			<cookies>
+				<aoestatic_customername>
+					<value>###CUSTOMERNAME###</value>
+					<period>3600</period>
+					<path><![CDATA[/]]></path>
+					<!-- <domain></domain>
+					<secure></secure>-->
+					<httponly>0</httponly>
+				</aoestatic_customername>
+				<aoestatic_numberofitemsincart>
+					<value>###NUMBEROFITEMSINCART###</value>
+					<period>3600</period>
+					<path><![CDATA[/]]></path>
+					<!-- <domain></domain>
+					<secure></secure>-->
+					<httponly>0</httponly>
+				</aoestatic_numberofitemsincart>
+			</cookies>
+		</uncached>
+
+		<!-- Configuration for full action names... -->
+		<cms_index_index>
+			<disabled>0</disabled>
+			<headers>
+				<X-Magento-Lifetime>86400</X-Magento-Lifetime>
+				<Cache-Control>max-age=86400</Cache-Control>
+				<aoestatic>cache</aoestatic>
+			</headers>
+		</cms_index_index>
+
+		<cms_page_view>
+			<!-- refer to another configuration instead -->
+			<use>cms_index_index</use>
+		</cms_page_view>
+
+		<catalog_product_view>
+			<use>cms_index_index</use>
+		</catalog_product_view>
+
+		<catalog_category_view>
+			<use>cms_index_index</use>
+		</catalog_category_view>
+
+	</aoe_static>
+</config>

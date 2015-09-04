@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+         <system>
+            <children>
+                <aoestatic_customUrl translate="title" module="aoestatic">
+                    <title>Urls max-age management</title>
+                    <action>adminhtml/aoestatic_customUrl</action>
+                    <sort_order>10</sort_order>
+                </aoestatic_customUrl>
+            </children>
+         </system>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system translate="title" module="aoestatic">
+                        <children>
+                            <aoestatic_customUrl translate="title">
+                                <title>Manage Urls max-age</title>
+                                <sort_order>0</sort_order>
+                                <children>
+                                    <save translate="title">
+                                        <title>Save Url</title>
+                                        <sort_order>0</sort_order>
+                                    </save>
+                                    <delete translate="title">
+                                        <title>Delete Url</title>
+                                        <sort_order>10</sort_order>
+                                    </delete>
+                                </children>
+                            </aoestatic_customUrl>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

@@ -10,20 +10,36 @@
 class Aoe_Static_Helper_Data extends Mage_Core_Helper_Abstract
 {
     /**
-     * Check if a fullActionName is configured as cacheable
-     *
-     * @param string $fullActionName
-     * @return false|int false if not cacheable, otherwise lifetime in seconds
+     * Registry Key to store individual max-age times
      */
-    public function isCacheableAction($fullActionName)
+    const REGISTRY_MAX_AGE = 'aoe_static_max_age';
+
+    /**
+     * computes the minimum max-age timestamp, based on the given timestamps and a possible earlier-set timestamp
+     *
+     * @param array|int $timestamps
+     * @return Aoe_Static_Helper_Data
+     */
+    public function computeRegistryMaxAge($timestamps)
     {
-        $cacheActionsString = Mage::getStoreConfig('system/aoe_static/cache_actions');
-        foreach (explode(',', $cacheActionsString) as $singleActionConfiguration) {
-            list($actionName, $lifeTime) = explode(';', $singleActionConfiguration);
-            if (trim($actionName) == $fullActionName) {
-                return intval(trim($lifeTime));
+        $maxAge = -1;
+        if (!is_array($timestamps)) {
+            $timestamps = array($timestamps);
+        }
+
+        foreach ($timestamps as $timestamp) {
+            if (($timestamp > 0) && (($timestamp < $maxAge) || ($maxAge < 0))) {
+                $maxAge = $timestamp;
             }
         }
-        return false;
-	}
+        if ($timestamp = Mage::registry(self::REGISTRY_MAX_AGE)) {
+            if (($timestamp > 0) && (($timestamp < $maxAge) || ($timestamp < 0))) {
+                $maxAge = $timestamp;
+            }
+            Mage::unregister(self::REGISTRY_MAX_AGE);
+        }
+        Mage::register(self::REGISTRY_MAX_AGE, $maxAge);
+
+        return $this;
+    }
 }

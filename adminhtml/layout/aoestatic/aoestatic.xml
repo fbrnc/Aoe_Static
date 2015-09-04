@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<layout>
+    <adminhtml_aoestatic_customurl_index>
+        <reference name="content">
+            <block type="aoestatic/adminhtml_customUrl" name="aoestatic.custom_url.list" />
+        </reference>
+    </adminhtml_aoestatic_customurl_index>
+    <adminhtml_aoestatic_customurl_edit>
+        <reference name="content">
+            <block type="aoestatic/adminhtml_customUrl_edit" name="aoestatic.custom_url.edit" />
+        </reference>
+    </adminhtml_aoestatic_customurl_edit>
+    <adminhtml_aoestatic_customurl_grid>
+        <block type="aoestatic/adminhtml_customUrl_grid" name="root" />
+    </adminhtml_aoestatic_customurl_grid>
+</layout>
