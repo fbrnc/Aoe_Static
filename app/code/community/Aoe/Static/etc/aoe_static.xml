@@ -56,7 +56,7 @@
         <!-- This will be applied if none of the the fullaction name is not found or disabled in the following configurations -->
         <uncached>
             <headers>
-                <Cache-Control>no-cache</Cache-Control>
+                <Cache-Control>no-store, no-cache, must-revalidate, post-check=0, pre-check=0</Cache-Control>
                 <X-Aoestatic-LoggedIn>###ISLOGGEDIN###</X-Aoestatic-LoggedIn>
             </headers>
             <cookies>
