@@ -54,7 +54,7 @@ class Aoe_Static_Model_Observer
         /* @var $session Mage_Customer_Model_Session */
         if ($session->isLoggedIn()) {
             $loggedIn     = '1';
-            $customerName = Mage::helper('core')->escapeHtml($session->getCustomer()->getName());
+            $customerName = Mage::helper('core')->escapeHtml(trim($session->getCustomer()->getName()));
         }
 
         /** @var Aoe_Static_Model_Cache_Marker $cacheMarker */
