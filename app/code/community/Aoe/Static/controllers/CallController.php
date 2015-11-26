@@ -52,7 +52,7 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
     {
         // if (!$this->getRequest()->isXmlHttpRequest()) { Mage::throwException('This is not an XmlHttpRequest'); }
         $response = array();
-        $response['sid'] = Mage::getModel('core/session')->getEncryptedSessionId();
+        //$response['sid'] = Mage::getModel('core/session')->getEncryptedSessionId();
 
         if ($currentProductId = $this->getRequest()->getParam('currentProductId')) {
             Mage::getModel('reports/product_index_viewed')
