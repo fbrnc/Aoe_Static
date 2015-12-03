@@ -53,7 +53,7 @@ var Aoe_Static = {
     isLoggedIn: function() {
         var cookieValues = this.getCookieContent();
         //return typeof cookieValues['customername'] != 'undefined' && cookieValues['customername'].length;
-        return typeof cookieValues['isloggedin'] != 'undefined' && cookieValues['isloggedin'] === 1;
+        return typeof cookieValues['isloggedin'] != 'undefined' && cookieValues['isloggedin'] == 1;
     },
 
     /**
