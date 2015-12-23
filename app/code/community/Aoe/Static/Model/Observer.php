@@ -339,7 +339,7 @@ class Aoe_Static_Model_Observer
             if (!empty($errors)) {
                 $this->_addSessionMessage('error', $helper->__("Static Purge failed"));
             } else {
-                $this->_addSessionMessage('success', $helper->__("Static Purge failed"));
+                $this->_addSessionMessage('success', $helper->__("Static Purge succeed"));
             }
 
             return $this;
