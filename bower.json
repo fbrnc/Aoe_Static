@@ -1,0 +1,27 @@
+{
+  "name": "Aoe_Static",
+  "homepage": "https://github.com/AOEpeople/Aoe_Static",
+  "authors": [
+    "AOE Developers <dev@aoe.com>"
+  ],
+  "description": "Make your Magento Store fly using Varnish.",
+  "main": "js/aoestatic/common.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "varnish",
+    "magento",
+    "aoe_static",
+    "client"
+  ],
+  "license": "LICENSE",
+  "ignore": [
+    "**/.*",
+    "*.vcl",
+    "app",
+    "composer.json",
+    "modman",
+    "Readme.md"
+  ]
+}
