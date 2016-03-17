@@ -197,6 +197,14 @@
                 </observers>
             </catalog_category_product_cat_partial_reindex>
 
+            <cataloginventory_stock_item_save_after>
+                <observers>
+                    <aoestatic>
+                        <class>aoestatic/observer</class>
+                        <method>productOutOfStock</method>
+                    </aoestatic>
+                </observers>
+            </cataloginventory_stock_item_save_after>
         </events>
     </global>
 

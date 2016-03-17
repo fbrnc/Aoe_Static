@@ -282,6 +282,38 @@ class Aoe_Static_Model_Observer
     }
 
     /**
+     * Observer for cataloginventory_stock_item_save_after
+     * checking for product going out of stock
+     *
+     * This is needed for catching product availability change after it was sold out
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function productOutOfStock($observer) {
+        $stockItem = $observer->getItem();
+        if (! $stockItem instanceof Mage_CatalogInventory_Model_Stock_Item) {
+            return;
+        }
+        $originalStockData = $stockItem->getOrigData('is_in_stock');
+
+        if ((!is_null($originalStockData)
+            && $stockItem->getIsInStock() != $originalStockData
+            && $stockItem->getProductId() > 0)
+        || $stockItem->getStockStatusChangedAuto()
+        ) {
+            $tagsToPurge = array();
+            /** @var $helper Aoe_Static_Helper_Data */
+            $helper = Mage::helper('aoestatic');
+            $tagsToPurge[] = 'product-' . $stockItem->getProductId();
+            $categoryIds = Mage::getModel('catalog/product')->setId($stockItem->getProductId())->getCategoryIds();
+            foreach($categoryIds as $id) {
+                $tagsToPurge[] = 'category-' . $id;
+            }
+            $helper->purgeTags($tagsToPurge);
+        }
+    }
+
+    /**
      * shows message in case admin session exists
      *
      * @param string $type    message type (error/success/notice)
