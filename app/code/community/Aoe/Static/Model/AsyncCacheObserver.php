@@ -27,7 +27,7 @@ class Aoe_Static_Model_AsyncCacheObserver
                     }
                 }
 
-                Mage::log(sprintf('[ASYNCCACHE URL] MODE: %s, DURATION: %s sec, TAGS: %s',
+                Mage::helper('aoestatic')->log(sprintf('[ASYNCCACHE URL] MODE: %s, DURATION: %s sec, TAGS: %s',
                     $job->getMode(),
                     $job->getDuration(),
                     implode(', ', $job->getTags())
@@ -44,7 +44,7 @@ class Aoe_Static_Model_AsyncCacheObserver
                     }
                 }
 
-                Mage::log(sprintf('[ASYNCCACHE TAG] MODE: %s, DURATION: %s sec, TAGS: %s',
+                Mage::helper('aoestatic')->log(sprintf('[ASYNCCACHE TAG] MODE: %s, DURATION: %s sec, TAGS: %s',
                     $job->getMode(),
                     $job->getDuration(),
                     implode(', ', $job->getTags())
