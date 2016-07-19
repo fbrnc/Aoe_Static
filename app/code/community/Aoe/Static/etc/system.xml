@@ -39,6 +39,22 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </use_aoe_asynccache>
+                        <snsTopic>
+                            <label>SNS Topic (for SNS purge adapter only)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </snsTopic>
+                        <snsRegion>
+                            <label>SNS Region</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </snsRegion>
                         <debug translate="label">
                             <label>Debug</label>
                             <comment><![CDATA[Add debug data to responses]]></comment>
