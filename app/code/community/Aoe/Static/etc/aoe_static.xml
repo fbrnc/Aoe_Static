@@ -119,14 +119,16 @@
         <adapters><!-- Register additional adapters here -->
             <varnish>
                 <model>aoestatic/cache_adapter_varnish</model>
-                <config>
-                </config>
+                <config></config>
             </varnish>
             <blackhole>
                 <model>aoestatic/cache_adapter_blackhole</model>
-                <config>
-                </config>
+                <config></config>
             </blackhole>
+            <sns>
+                <model>aoestatic/cache_adapter_sns</model>
+                <config></config>
+            </sns>
         </adapters>
     </aoe_static_purging>
 

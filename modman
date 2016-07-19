@@ -5,3 +5,4 @@ app/design/frontend/base/default/layout/aoestatic/ app/design/frontend/base/defa
 app/design/frontend/base/default/template/aoestatic/ app/design/frontend/base/default/template/aoestatic/
 app/etc/modules/Aoe_Static.xml app/etc/modules/Aoe_Static.xml
 js/aoestatic/ js/aoestatic/
+shell/aoe_static.php shell/aoe_static.php
