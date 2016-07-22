@@ -49,7 +49,7 @@ class Aoe_Static_Model_Cache_Adapter_Sns extends Aoe_Static_Model_Cache_Adapter_
 
     protected function sendRequests(array $actions)
     {
-        Mage::log('[Aoe_Static SNS] Public SNS message');
+        Mage::log('[Aoe_Static SNS] Publish SNS message');
         $this->getSnsClient()->publish([
             'Message' => json_encode($actions),
             'Subject' => 'Aoe_Static',
