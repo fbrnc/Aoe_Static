@@ -11,6 +11,42 @@ class Aoe_Static_Shell extends Mage_Shell_Abstract
         var_dump($errors);
     }
 
+    public function purgeUrlAction()
+    {
+        $url = $this->getArg('url');
+        if (!$url) {
+            $this->usageHelp();
+            exit(1);
+        }
+        echo "Purging cache for '$url'";
+        $helper = Mage::helper('aoestatic'); /* @var $helper Aoe_Static_Helper_Data */
+        $errors = $helper->purge(array($url), false);
+        var_dump($errors);
+    }
+
+    public function purgeUrlsActionHelp()
+    {
+        return ' -url <url/regex>';
+    }
+
+    public function purgeTagAction()
+    {
+        $tag = $this->getArg('tag');
+        if (!$tag) {
+            $this->usageHelp();
+            exit(1);
+        }
+        echo "Purging cache for tag '$tag'";
+        $helper = Mage::helper('aoestatic'); /* @var $helper Aoe_Static_Helper_Data */
+        $errors = $helper->purgeTags(array($tag));
+        var_dump($errors);
+    }
+
+    public function purgeTagActionHelp()
+    {
+        return ' -tag <tag>';
+    }
+
     /**
      * Run script
      */
