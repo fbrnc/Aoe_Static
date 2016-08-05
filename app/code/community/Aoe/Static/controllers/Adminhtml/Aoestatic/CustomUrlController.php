@@ -2,7 +2,7 @@
 /**
  * Class Aoe_Static_Adminhtml_Aoestatic_CustomUrlController
  *
- * @author Dmytro Zavalkin <dmytro.zavalkin@aoemedia.de>
+ * @author Dmytro Zavalkin
  */
 class Aoe_Static_Adminhtml_Aoestatic_CustomUrlController extends Mage_Adminhtml_Controller_Action
 {

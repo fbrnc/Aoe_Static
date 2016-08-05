@@ -2,7 +2,7 @@
 /**
  * Custom url model class
  *
- * @author Dmytro Zavalkin <dmytro.zavalkin@aoemedia.de>
+ * @author Dmytro Zavalkin
  *
  * @method Aoe_Static_Model_Resource_CustomUrl _getResource()
  * @method Aoe_Static_Model_Resource_CustomUrl getResource()
