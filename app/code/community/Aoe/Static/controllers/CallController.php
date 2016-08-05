@@ -2,7 +2,7 @@
 
 /**
  * CallController
- * Renders the block that are requested via an ajax call
+ * Renders the blocks that are requested via an ajax call
  *
  * @author Fabrizio Branca
  */
