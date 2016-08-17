@@ -306,6 +306,7 @@
             <aoestatic>
                 <servers><![CDATA[127.0.0.1:83]]></servers>
                 <debug>0</debug>
+                <renderEsiPlaceholderChildren>1</renderEsiPlaceholderChildren>
             </aoestatic>
         </dev>
     </default>

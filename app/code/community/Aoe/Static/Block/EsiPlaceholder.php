@@ -8,6 +8,7 @@
  */
 class Aoe_Static_Block_EsiPlaceholder extends Mage_Core_Block_Template
 {
+
     /**
      * @var string default template of this block
      */
@@ -20,5 +21,10 @@ class Aoe_Static_Block_EsiPlaceholder extends Mage_Core_Block_Template
         ));
         # make url relative (TODO: is there a smarter way of doing this?)
         return str_replace(Mage::getBaseUrl(), '/', $url);
+    }
+
+    public function renderChildren()
+    {
+        return Mage::getStoreConfigFlag('dev/aoestatic/renderEsiPlaceholderChildren');
     }
 }
