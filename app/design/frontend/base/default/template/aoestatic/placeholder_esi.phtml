@@ -1,6 +1,10 @@
 <?php /* @var $this Aoe_Static_Block_EsiPlaceholder */ ?>
 
+<!-- ESI CONTENT -->
 <esi:include src="<?php echo $this->getUrl() ?>"/>
+<!-- /ESI CONTENT -->
 <?php if ($this->renderChildren()): ?>
+    <!-- ESI PLACEHOLDER CHILDREN -->
     <esi:remove><?php echo $this->getChildHtml(); ?></esi:remove>
+    <!-- /ESI PLACEHOLDER CHILDREN -->
 <?php endif; ?>
