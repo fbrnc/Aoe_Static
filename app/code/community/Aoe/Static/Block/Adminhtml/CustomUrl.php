@@ -2,7 +2,7 @@
 /**
  * Class Aoe_Static_Block_Adminhtml_CustomUrl
  *
- * @author Dmytro Zavalkin <dmytro.zavalkin@aoemedia.de>
+ * @author Dmytro Zavalkin
  */
 class Aoe_Static_Block_Adminhtml_CustomUrl extends Mage_Adminhtml_Block_Widget_Grid_Container
 {

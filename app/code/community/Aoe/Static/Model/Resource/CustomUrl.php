@@ -2,7 +2,7 @@
 /**
  * Custom url resource model class
  *
- * @author Dmytro Zavalkin <dmytro.zavalkin@aoemedia.de>
+ * @author Dmytro Zavalkin
  */
 class Aoe_Static_Model_Resource_CustomUrl extends Mage_Core_Model_Resource_Db_Abstract
 {
