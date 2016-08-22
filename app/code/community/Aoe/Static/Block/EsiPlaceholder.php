@@ -14,7 +14,7 @@ class Aoe_Static_Block_EsiPlaceholder extends Mage_Core_Block_Template
      */
     protected $_template = 'aoestatic/placeholder_esi.phtml';
 
-    public function getUrl()
+    public function getEsiUrl()
     {
         $url = parent::getUrl('aoestatic/esi/index', array(
             'block' => $this->getPlaceholderBlockname(),
