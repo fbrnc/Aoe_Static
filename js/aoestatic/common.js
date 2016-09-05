@@ -25,10 +25,11 @@ var Aoe_Static = {
 
     /**
      * populate page
+     * @param {Boolean} avoidReload
      */
-    populatePage: function() {
+    populatePage: function(avoidReload) {
         this.replaceCookieContent();
-        this.replaceAjaxBlocks();
+        this.replaceAjaxBlocks(avoidReload);
         if (this.isLoggedIn()) {
             jQuery('.aoestatic_notloggedin').hide();
             jQuery('.aoestatic_loggedin').show();
@@ -92,16 +93,18 @@ var Aoe_Static = {
 
     /**
      * Load block content from server
+     * @param {Boolean} avoidReload
      */
-    replaceAjaxBlocks: function() {
-        jQuery(document).ready(function($) {
+    replaceAjaxBlocks: function(avoidReload) {
+        jQuery(function($) {
             var data = {
                 getBlocks: {}
             };
 
             // add placeholders
             var counter = 0;
-            $('.as-placeholder').each(function() {
+
+            var $placeholder = $('.as-placeholder').each(function() {
                 var id = $(this).attr('id');
                 if (!id) {
                     // create dynamic id
@@ -111,7 +114,7 @@ var Aoe_Static = {
                 var rel = $(this).attr('rel');
                 if (rel) {
                     if (localStorage.getItem('aoe_static_blocks_' + rel)) {
-                        $('#' + id).html(localStorage.getItem('aoe_static_blocks_' + rel));
+                        Aoe_Static._replaceBlock(id, localStorage.getItem('aoe_static_blocks_' + rel));
                     }
                     data.getBlocks[id] = rel;
                     counter++;
@@ -121,22 +124,30 @@ var Aoe_Static = {
                 }
             });
 
+            // avoid E.T. phone home if avoidReload option is set and no block to initialize were found
+            if (avoidReload && !$placeholder.filter(':not(.initialized)').length) return;
+
             // E.T. phone home, get blocks and pending flash-messages
             $.get(
-                Aoe_Static.ajaxHomeUrl,
-                data,
-                function (response) {
-                    for(var id in response.blocks) {
-                        $('#' + id).html(response.blocks[id]);
-                        // try to save in localStorage if allowed (f.e. not allowed in private mode on iOS)
-                        try {
-                            localStorage.setItem('aoe_static_blocks_' + data.getBlocks[id], response.blocks[id]);
-                        } catch(e) {}
-                    }
-                    jQuery('body').trigger('aoestatic_afterblockreplace', response);
-                },
-                'json'
+              Aoe_Static.ajaxHomeUrl,
+              data,
+              function (response) {
+                  for(var id in response.blocks) {
+                      Aoe_Static._replaceBlock(id, response.blocks[id]);
+                      // try to save in localStorage if allowed (f.e. not allowed in private mode on iOS)
+                      try {
+                          localStorage.setItem('aoe_static_blocks_' + data.getBlocks[id], response.blocks[id]);
+                      } catch(e) {}
+                  }
+                  jQuery('body').trigger('aoestatic_afterblockreplace', response);
+              },
+              'json'
             );
         });
+    },
+
+    _replaceBlock: function (id, content) {
+        var $block = jQuery('#' + id);
+        $block.html(content).addClass('initialized');
     }
 };
