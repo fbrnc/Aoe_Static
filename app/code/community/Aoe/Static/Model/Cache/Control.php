@@ -36,6 +36,14 @@ class Aoe_Static_Model_Cache_Control
     }
 
     /**
+     * @return boolean
+     */
+    public function isEnabled()
+    {
+        return $this->_enabled;
+    }
+
+    /**
      * computes minimum max-age
      *
      * @param int|array $maxAge
