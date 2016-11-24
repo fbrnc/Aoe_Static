@@ -35,6 +35,11 @@ class Aoe_Static_Model_Observer
      */
     public function processPostDispatch(Varien_Event_Observer $observer)
     {
+        //Check if caching is enabled for this dispatch
+        if (!Mage::getSingleton('aoestatic/cache_control')->isEnabled()) {
+            return $this;
+        }
+
         // check if we have messages to display
         $this->messagesToShow = $this->checkForMessages();
 
