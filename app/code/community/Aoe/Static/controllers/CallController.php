@@ -13,7 +13,12 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
      *
      * @var array
      */
-    protected $_sessions = array('core/session', 'customer/session', 'catalog/session', 'checkout/session');
+    protected $_sessions = array(
+        'core/session', 'customer/session', 'catalog/session', 'checkout/session'
+    );
+
+    /** @var  Aoe_Static_Model_Config */
+    protected $_config;
 
     /**
      * render requested blocks
@@ -55,11 +60,27 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
         //$response['sid'] = Mage::getModel('core/session')->getEncryptedSessionId();
 
         if ($currentProductId = $this->getRequest()->getParam('currentProductId')) {
-            Mage::getModel('reports/product_index_viewed')
-                ->setProductId($currentProductId)
+            /** @var Mage_Reports_Model_Product_Index_Viewed $report */
+            $report = Mage::getModel('reports/product_index_viewed');
+            $report->setProductId($currentProductId)
                 ->save()
                 ->calculate();
-            Mage::getSingleton('catalog/session')->setLastViewedProductId($currentProductId);
+
+            /** @var Mage_Catalog_Model_Session $session */
+            $session = Mage::getSingleton('catalog/session');
+            $session->setLastViewedProductId($currentProductId);
+
+            if ($this->getConfig()->isLoadCurrentProduct()) {
+                /** @var Mage_Catalog_Model_Product $product */
+                $product = Mage::getModel('catalog/product');
+                $product
+                    ->setStoreId(Mage::app()->getStore()->getId())
+                    ->load($currentProductId);
+                if ($product->getId()) {
+                    Mage::register('product', $product);
+                    Mage::register('current_product', $product);
+                }
+            }
         }
 
         $this->loadLayout();
@@ -91,6 +112,8 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
 
     /**
      * The same as Index action, but strips out the session_id and doesn't return messages
+     *
+     * @return void
      */
     public function secureAction()
     {
@@ -109,5 +132,31 @@ class Aoe_Static_CallController extends Mage_Core_Controller_Front_Action
         }
 
         $this->getResponse()->setBody(Zend_Json::encode($response));
+    }
+
+    /**
+     * @return Aoe_Static_Model_Config
+     */
+    public function getConfig()
+    {
+        if (!$this->_config) {
+            /** @var Aoe_Static_Model_Config $config */
+            $config = Mage::getSingleton('aoestatic/config');
+
+            $this->setConfig($config);
+        }
+
+        return $this->_config;
+    }
+
+    /**
+     * @param Aoe_Static_Model_Config $config Config
+     * @return $this
+     */
+    public function setConfig(Aoe_Static_Model_Config $config)
+    {
+        $this->_config = $config;
+
+        return $this;
     }
 }

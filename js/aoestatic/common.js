@@ -20,7 +20,7 @@ var Aoe_Static = {
         this.ajaxHomeUrl = ajaxhome_url;
         this.currentProductId = currentproductid;
 
-        this.populatePage();
+        this.populatePage(false);
     },
 
     /**
@@ -47,7 +47,7 @@ var Aoe_Static = {
         jQuery.each(this.getCookieContent(), function(name, value) {
             jQuery('.aoestatic_' + name).text(value);
             // console.log('Replacing ".aoestatic_' + name + '" with "' + value + '"');
-        })
+        });
         jQuery('body').trigger('aoestatic_aftercookiereplace');
     },
 
@@ -98,7 +98,8 @@ var Aoe_Static = {
     replaceAjaxBlocks: function(avoidReload) {
         jQuery(function($) {
             var data = {
-                getBlocks: {}
+                getBlocks: {},
+                currentProductId: Aoe_Static.currentProductId
             };
 
             // add placeholders
@@ -113,8 +114,9 @@ var Aoe_Static = {
                 }
                 var rel = $(this).attr('rel');
                 if (rel) {
-                    if (localStorage.getItem('aoe_static_blocks_' + rel)) {
-                        Aoe_Static._replaceBlock(id, localStorage.getItem('aoe_static_blocks_' + rel));
+                    var localStorageKey = Aoe_Static._getLocalStorageKey(rel);
+                    if (localStorage.getItem(localStorageKey)) {
+                        Aoe_Static._replaceBlock(id, localStorage.getItem(localStorageKey));
                     }
                     data.getBlocks[id] = rel;
                     counter++;
@@ -123,6 +125,7 @@ var Aoe_Static = {
                     throw 'Found placeholder without rel attribute';
                 }
             });
+            jQuery('body').trigger('aoestatic_afterlocalblockreplace');
 
             // avoid E.T. phone home if avoidReload option is set and no block to initialize were found
             if (avoidReload && !$placeholder.filter(':not(.initialized)').length) return;
@@ -136,7 +139,10 @@ var Aoe_Static = {
                       Aoe_Static._replaceBlock(id, response.blocks[id]);
                       // try to save in localStorage if allowed (f.e. not allowed in private mode on iOS)
                       try {
-                          localStorage.setItem('aoe_static_blocks_' + data.getBlocks[id], response.blocks[id]);
+                          localStorage.setItem(
+                              Aoe_Static._getLocalStorageKey(data.getBlocks[id]),
+                              response.blocks[id]
+                          );
                       } catch(e) {}
                   }
                   jQuery('body').trigger('aoestatic_afterblockreplace', response);
@@ -149,5 +155,9 @@ var Aoe_Static = {
     _replaceBlock: function (id, content) {
         var $block = jQuery('#' + id);
         $block.html(content).addClass('initialized');
+    },
+
+    _getLocalStorageKey: function(code) {
+        return 'aoe_static_blocks_' + Aoe_Static.websiteId + '_' + Aoe_Static.storeId + '_' + code;
     }
 };

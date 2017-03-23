@@ -33,13 +33,13 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
     /**
      * @var null|array
      */
-    protected $markers = NULL;
+    protected $_markers = null;
 
     /**
      * Class constructor
      * load cache configuration
      *
-     * @param string $sourceData
+     * @param string $sourceData Source data
      * @SuppressWarnings
      */
     public function __construct($sourceData = null)
@@ -63,19 +63,21 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
     /**
      * Get action configuration
      *
-     * @param $fullActionName
+     * @param string $fullActionName Full action name
      * @return false|Mage_Core_Model_Config_Element
      */
     public function getActionConfiguration($fullActionName)
     {
-        $configuration = $this->getNode('aoe_static/'.$fullActionName);
+        $configuration = $this->getNode('aoe_static/' . $fullActionName);
         if (!$configuration || (1 == $configuration->disabled)) {
+
             return false;
         }
-        $use = (string)$configuration->use;
+        $use = (string) $configuration->use;
         if ($use) {
             $configuration = $this->getActionConfiguration($use);
         }
+
         return $configuration;
     }
 
@@ -84,15 +86,16 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
      */
     public function getMarkersCallbackConfiguration()
     {
-        if (is_null($this->markers)) {
-            $this->markers = $this->getNode('aoe_static/default/markers');
+        if (is_null($this->_markers)) {
+            $this->_markers = $this->getNode('aoe_static/default/markers');
         }
-        return $this->markers;
+
+        return $this->_markers;
     }
 
     /**
      * Get callback string like some_module/fooclass::getValue for a given marker name
-     * @param $marker string
+     * @param string $marker Marker string
      * @return string callback
      */
     public function getMarkerCallback($marker)
@@ -101,8 +104,9 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
         $configuration = $this->getMarkersCallbackConfiguration();
         $markerWithoutHash = str_replace('#', '',$marker);
         if (isset($configuration->$markerWithoutHash->valueCallback)) {
-            $callback = (string)$configuration->$markerWithoutHash->valueCallback;
+            $callback = (string) $configuration->$markerWithoutHash->valueCallback;
         }
+
         return $callback;
     }
 
@@ -115,6 +119,7 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
     {
         $adapters = $this->getNode('aoe_static_purging/adapters');
         if (!$adapters) {
+
             return array();
         }
 
@@ -127,5 +132,13 @@ class Aoe_Static_Model_Config extends Mage_Core_Model_Config_Base
     public function useAsyncCache()
     {
         return Mage::getStoreConfigFlag('dev/aoestatic/use_aoe_asynccache');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoadCurrentProduct()
+    {
+        return Mage::getStoreConfigFlag('dev/aoestatic/load_current_product');
     }
 }
