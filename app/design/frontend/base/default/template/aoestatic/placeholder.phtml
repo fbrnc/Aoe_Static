@@ -1,4 +1,8 @@
 <?php /* @var $this Aoe_Static_Block_Placeholder */ ?>
-<div class="as-placeholder" <?php if ($this->getPlaceholderId()) { echo 'id="'.$this->getPlaceholderId().'"'; } ?> rel="<?php echo $this->getPlaceholderBlockname() ?>">
+<div class="as-placeholder"
+    <?php if ($this->getPlaceholderId()) { echo 'id="'.$this->getPlaceholderId().'"'; } ?>
+     rel="<?php echo $this->getPlaceholderBlockname() ?>"
+    <?php // use skip-aoestatic to disable the use of the browsers localstorage (e.g. to show a load spinner) ?>
+     data-aoestatic="use-localstorage">
 	<?php echo $this->getChildHtml(); ?>
 </div>

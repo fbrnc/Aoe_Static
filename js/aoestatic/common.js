@@ -114,9 +114,12 @@ var Aoe_Static = {
                 }
                 var rel = $(this).attr('rel');
                 if (rel) {
-                    var localStorageKey = Aoe_Static._getLocalStorageKey(rel);
-                    if (localStorage.getItem(localStorageKey)) {
-                        Aoe_Static._replaceBlock(id, localStorage.getItem(localStorageKey));
+                    var dataAttribute = $(this).attr('data-aoestatic');
+                    if (!dataAttribute || dataAttribute !== 'skip-localstorage') {
+                        var localStorageKey = Aoe_Static._getLocalStorageKey(rel);
+                        if (localStorage.getItem(localStorageKey)) {
+                            Aoe_Static._replaceBlock(id, localStorage.getItem(localStorageKey));
+                        }
                     }
                     data.getBlocks[id] = rel;
                     counter++;
